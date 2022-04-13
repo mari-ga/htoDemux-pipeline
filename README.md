@@ -11,5 +11,3 @@
 - UMI Matrix.rds File
 - Hashtag counts matrix  .rds File. (*)
 
-
-Creates a pipeline simulating the the 4 main stages for the demultiplexing process proposed by HTODemux
