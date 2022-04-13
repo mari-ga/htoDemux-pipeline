@@ -4,10 +4,14 @@ nextflow.enable.dsl=2
 
 """
  * Input: 
-    * UMI-matrix.rds
-    * hashtag-counts-matrix.rds
+    --umi-matrix.rds
+    --hashtag-counts-matrix.rds
+
+  * Output    
+    -- 
 """
-umi_chanel = Channel.fromPath(params.umi_counts)
+umi_chanel = Channel.fromPath(params.umi_count)
+hto_chanel = Channel.fromPath(params.htos_mat)
 
 input:
 
