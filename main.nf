@@ -25,6 +25,8 @@ input:
     path hto_matrix from hto_chanel
 
 output:
+
+    //Binary
     file 'table_classification' 
     """
         Allow different types of outputs:
@@ -37,4 +39,10 @@ script:
     """
 echo "Working"
 
+}
+
+process hto-visualisation{
+
+
+    
 }
