@@ -1,7 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-num = Channel.from( 1, 2, 3 )
+umi_chanel = Channel.fromPath(params.umi_count)
+hto_chanel = Channel.fromPath(params.htos_mat)
 
 /*
  * Input: 
@@ -23,4 +24,29 @@ process htoDemultiplex{
 
 
 }
+
+
+
+
+input:
+
+    path umi_counts from umi_chanel
+    path hto_matrix from hto_chanel
+
+output:
+
+    //Binary
+    file 'table_classification' 
+    /*
+        Allow different types of outputs:
+            * Binary file is possible from S4 class
+            * Ascii file also possible from S4
+    */
+
+process hto-visualisation{
+
+
+
+}
+
 
