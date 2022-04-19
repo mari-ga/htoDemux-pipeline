@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 install.packages("Seurat",repos=c("http://cran.rstudio.com"))
-install.packages('multtest')
+
 #Receive arguments from command line
 options(echo=TRUE)
 #Get arguments as a vector
