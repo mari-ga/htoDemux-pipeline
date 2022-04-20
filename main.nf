@@ -1,9 +1,5 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
-
-umi_chanel = Channel.fromPath(params.umi_count)
-hto_chanel = Channel.fromPath(params.htos_mat)
-
 /*
  * Input: 
     --umi-matrix.rds <path>
@@ -15,38 +11,29 @@ hto_chanel = Channel.fromPath(params.htos_mat)
     --outdir_ascii
     --out_stdout
 */
+log.info """\
+ HTODemux - P I P E L I N E
+ ===================================
+ UMI-Counts: ${params.params}
+ HTO-Matrix: ${params.hto_mat}
+ """
 
-process htoDemultiplex{
- input:
-  val x from num
+process htoDemux {
+  input:
+    path umi_counts
+    path hto_matrix
+  script:
+    """
+    println("Working")
+    """
 
-  "echo process job $x"
+}
 
-
+workflow {
+  umi_counts = Channel.fromPath(params.umi_count)
+  hto_matrix = Channel.fromPath(params.hto_mat)
 }
 
 
-
-
-input:
-
-    path umi_counts from umi_chanel
-    path hto_matrix from hto_chanel
-
-output:
-
-    //Binary
-    file 'table_classification' 
-    /*
-        Allow different types of outputs:
-            * Binary file is possible from S4 class
-            * Ascii file also possible from S4
-    */
-
-process hto-visualisation{
-
-
-
-}
 
 
