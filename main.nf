@@ -24,7 +24,7 @@ process htoDemux {
     path hto_matrix
   script:
     """
-    println("Working")
+    Rscript HTODemux-args.R $umi_counts $hto_matrix
     """
 
 }
