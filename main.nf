@@ -22,6 +22,9 @@ process htoDemux {
   input:
     path umi_counts
     path hto_matrix
+
+  output:
+    stdout seurat_object
   script:
     """
     Rscript HTODemux-args.R $umi_counts $hto_matrix
