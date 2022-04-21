@@ -16,8 +16,7 @@ file_htos = myargs[2]
 
 #Parameters - section 2
 selection_method = myargs[3]
-number_features = myargs[4]
-typeof(number_features)
+number_features = as.integer(myargs[4])
 
 
 if(is.na(selection_method))
@@ -33,9 +32,10 @@ if(is.na(number_features))
 
 #Parameters - section 3
 normalisation_method = myargs[5]
-margin  = myargs[6]
+margin  = as.integer(myargs[6])
 assay   = myargs[7]
-print(assay)
+
+
 if(is.na(normalisation_method))
 {
   print("Empty args for normalisation method")
