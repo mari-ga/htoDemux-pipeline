@@ -10,4 +10,4 @@
 
 - UMI Matrix.rds File
 - Hashtag counts matrix  .rds File. (*)
-
+- Parameters for HTODemux
