@@ -1,97 +1,46 @@
 #!/usr/bin/env Rscript
 #install.packages("Seurat",repos=("http://cran.rstudio.com"))
 #install.packages("spatstat.sparse",repos=("http://cran.rstudio.com"))
+#install.packages('argparser', repos=("http://cran.rstudio.com"))
 #Receive arguments from command line
 options(echo=TRUE)
-#Get arguments as a vector
-myargs = commandArgs(trailingOnly=TRUE)
 
-#Library
+#Libraries
 library(Seurat)
+library(argparser, quietly=TRUE)
 
+# Create a parser
+p <- arg_parser("Parameters for HTODemux")
+
+#Parameters - section 1
 #Import files
-file_umis = myargs[1]
-file_htos = myargs[2]
 
+p <- add_argument(p, "--fileUmi",help="Path to file UMI count matrix")
+p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 
 #Parameters - section 2
-selection_method = myargs[3]
-number_features = as.integer(myargs[4])
-
-
-if(is.na(selection_method))
-{
-  print("Empty args for selection method")
-  selection_method = "vst"
-}
-if(is.na(number_features))
-{
-  print("Empty args for number of features")
-  number_features = 2000
-}
+p <- add_argument(p, "--selectMethod",help="Selection method", default="vst")
+p <- add_argument(p, "--numberFeatures",help="Number of features to be used when finding variable features", type="numeric", default=2000)
 
 #Parameters - section 3
-normalisation_method = myargs[5]
-margin  = as.integer(myargs[6])
-assay   = myargs[7]
-
-
-if(is.na(normalisation_method))
-{
-  print("Empty args for normalisation method")
-  print("Normalisation method per default CLR")
-  normalisation_method = "CLR"
-}
-
-if(is.na(margin))
-{
-  print("Empty args for margin")
-  margin = 2
-}
-
-if(is.na(assay))
-{
-  print("empty args for assay")
-  print("Assay per default: HTO")
-  assay  = "HTO"
-}
+p <- add_argument(p, "--normalisationMethod",help="Normalisation method", default="CLR")
+p <- add_argument(p, "--margin",help="Margin for normalisation", type="numeric",default=2)
+p <- add_argument(p, "--assay",help="Choose assay between RNA or HTO",default="HTO")
 
 #parameters - section 4
-positive_quantile = myargs[8]
-kfunc = myargs[9]
-nstarts = myargs[10]
-nsamples = myargs[11]
+p <- add_argument(p, "--quantile",help="Positive quantile per default: 0.99", type="numeric",default=0.99)
+p <- add_argument(p, "--kfunc",help="Cluster function choose between: Clara - kmeans",default="kmeans")
+p <- add_argument(p, "--nstarts",help="number of starts for demultiplex", type="numeric",default=100)
+p <- add_argument(p, "--nsamples",help="number of samples for demultiplex", type="numeric",default=100)
 
-if(is.na(positive_quantile))
-{
-  print("Positive quantile per default: 0.99")
-  positive_quantile  = 0.99
-}
-
-if(is.na(kfunc))
-{
-  print("Clustering method per default: Kmeans")
-  kfunc  = "kmeans"
-}
-
-if(is.na(nstarts))
-{
-  print("Empty args for nstars, value per default")
-  nstarts = 100
-}
-
-if(is.na(nsamples))
-{
-  nsamples = 100
-}
-
+argv <- parse_args(p)
 
 
 #---------------- Section 1 - Input files -----------------
-pbmc.umis <-readRDS(file_umis)
+pbmc.umis <-readRDS(argv$fileUmi)
 print(pbmc.umis)
 
-pbmc.htos <- readRDS(file_htos)
+pbmc.htos <- readRDS(argv$fileHto)
 #pbmc.htos
 
 #Identify which UMI corresponds to which hashtag.
@@ -104,7 +53,6 @@ pbmc.htos <- as.matrix(pbmc.htos[, joint.bcs])
 # Confirm that the HTO have the correct names
 rownames(pbmc.htos)
 
-
 #-------------------- Section 2 - Setup Seurat ---------------------------------------
 
 #Setup Seurat object and add in the HTO data
@@ -116,36 +64,19 @@ pbmc.hashtag
 # Normalize RNA data with log normalization
 pbmc.hashtag <- NormalizeData(pbmc.hashtag)
 # Find and scale variable features
-pbmc.hashtag <- FindVariableFeatures(pbmc.hashtag, selection.method = selection_method, nfeatures=number_features)
-print("Using vst as selection method")
-pbmc.hashtag <- ScaleData(pbmc.hashtag, features = VariableFeatures(pbmc.hashtag))
-
-#-------------------- Section 2 - Setup Seurat ---------------------------------------
-
-#Setup Seurat object and add in the HTO data
-
-# Setup Seurat object
-pbmc.hashtag <- CreateSeuratObject(counts = pbmc.umis)
-pbmc.hashtag
-
-# Normalize RNA data with log normalization
-pbmc.hashtag <- NormalizeData(pbmc.hashtag)
-# Find and scale variable features
-pbmc.hashtag <- FindVariableFeatures(pbmc.hashtag, selection.method = selection_method, nfeatures=number_features)
-print("Using vst as selection method")
-pbmc.hashtag
+pbmc.hashtag <- FindVariableFeatures(pbmc.hashtag, selection.method = argv$selectMethod, nfeatures=argv$numberFeatures)
 pbmc.hashtag <- ScaleData(pbmc.hashtag, features = VariableFeatures(pbmc.hashtag))
 
 #------------------ Section 3 - adding HTO data as an independent assay ---------------------
 # Add HTO data as a new assay independent from RNA
 pbmc.hashtag[["HTO"]] <- CreateAssayObject(counts = pbmc.htos)
 # Normalize HTO data, here we use centered log-ratio (CLR) transformation
-pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = assay, normalization.method = normalisation_method, margin=margin)
+pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assay, normalization.method = argv$normalisationMethod, margin=argv$margin)
+
 
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
 
-pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = assay, positive.quantile = positive_quantile, kfunc = kfunc, nstarts = nstarts, nsamples = nsamples)
+pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = argv$assay, positive.quantile = argv$quantile, kfunc = argv$kfunc, nstarts = argv$nstarts, nsamples = argv$nsamples)
 
 # Global classification results
 table(pbmc.hashtag$HTO_classification.global)
-

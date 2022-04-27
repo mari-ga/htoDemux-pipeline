@@ -4,6 +4,12 @@ nextflow.enable.dsl=2
  * Input: 
     --umi-matrix.rds <path>
     --hashtag-counts-matrix.rds <path>
+    Parameters for HTODemux process:
+    --selection_method
+    --number_features
+    --normalisation_method
+    --margin
+    --assay
     --help
 
   * Output    
