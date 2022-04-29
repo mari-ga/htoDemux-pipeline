@@ -8,6 +8,7 @@ options(echo=TRUE)
 #Libraries
 library(Seurat)
 library(argparser, quietly=TRUE)
+library(ggplot2)
 
 # Create a parser
 p <- arg_parser("Parameters for HTODemux")
@@ -21,17 +22,25 @@ p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 #Parameters - section 2
 p <- add_argument(p, "--selectMethod",help="Selection method", default="vst")
 p <- add_argument(p, "--numberFeatures",help="Number of features to be used when finding variable features", type="numeric", default=2000)
+p <- add_argument(p, "--assay",help="Choose assay between RNA or HTO",default="HTO")
 
 #Parameters - section 3
 p <- add_argument(p, "--normalisationMethod",help="Normalisation method", default="CLR")
 p <- add_argument(p, "--margin",help="Margin for normalisation", type="numeric",default=2)
-p <- add_argument(p, "--assay",help="Choose assay between RNA or HTO",default="HTO")
+p <- add_argument(p, "--assayName",help="Name of the Hashtag assay HTO by default",default="HTO")
 
 #parameters - section 4
 p <- add_argument(p, "--quantile",help="Positive quantile per default: 0.99", type="numeric",default=0.99)
-p <- add_argument(p, "--kfunc",help="Cluster function choose between: Clara - kmeans",default="kmeans")
+p <- add_argument(p, "--kfunc",help="Cluster function choose between: Clara - kmeans",default="clara")
 p <- add_argument(p, "--nstarts",help="number of starts for demultiplex", type="numeric",default=100)
 p <- add_argument(p, "--nsamples",help="number of samples for demultiplex", type="numeric",default=100)
+
+#Output paths
+p <- add_argument(p, "--htoDemuxOut",help="Path to file where the results of htoDemux will be saved", default = NULL)
+p <- add_argument(p, "--nameOutputFile",help="Name for the file containing the output of HTODemux hashtag", default = "result.csv")
+p <- add_argument(p, "--graphs",help="Path to folder where the graphs produced from the HTODemux function can be saved", default = NULL)
+
+
 
 argv <- parse_args(p)
 
@@ -58,7 +67,7 @@ rownames(pbmc.htos)
 #Setup Seurat object and add in the HTO data
 
 # Setup Seurat object
-pbmc.hashtag <- CreateSeuratObject(counts = pbmc.umis)
+pbmc.hashtag <- CreateSeuratObject(counts = pbmc.umis, assay =argv$assay )
 pbmc.hashtag
 
 # Normalize RNA data with log normalization
@@ -71,12 +80,50 @@ pbmc.hashtag <- ScaleData(pbmc.hashtag, features = VariableFeatures(pbmc.hashtag
 # Add HTO data as a new assay independent from RNA
 pbmc.hashtag[["HTO"]] <- CreateAssayObject(counts = pbmc.htos)
 # Normalize HTO data, here we use centered log-ratio (CLR) transformation
-pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assay, normalization.method = argv$normalisationMethod, margin=argv$margin)
+pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
 
 
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
 
-pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = argv$assay, positive.quantile = argv$quantile, kfunc = argv$kfunc, nstarts = argv$nstarts, nsamples = argv$nsamples)
+pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile, kfunc = argv$kfunc, nstarts = argv$nstarts, nsamples = argv$nsamples)
+
 
 # Global classification results
 table(pbmc.hashtag$HTO_classification.global)
+
+print("---------------------------------------------")
+
+create_files <- function(name, path,extension) {
+  path_complete <- paste(path, name,extension,sep="")
+  print(path_complete)
+  if (file.exists(path_complete)) {
+    print("The file already exists...")
+    return(-1)
+  } else {
+    print("Created new file with results")
+    file.create(path_complete)
+    return(path_complete)
+  }
+}
+
+
+file_results <-create_files(argv$nameOutputFile, argv$htoDemuxOut,".csv")
+
+
+#write.table()
+write.csv(pbmc.hashtag$HTO_classification.global, file=file_results)
+
+
+
+
+
+#------------------ Section 5 - Visualisation ---------------------
+# Ridge Plot
+# Group cells based on the max HTO signal
+#file_name <- c(argv$graphs, "/myplot.pdf")
+#pdf(file= file_name)
+#Idents(pbmc.hashtag) <- "HTO_maxID"
+#RidgePlot(pbmc.hashtag, assay = "HTO", features = rownames(pbmc.hashtag[["HTO"]])[1:2], ncol = 2)
+#dev.off()
+#ggsave("ridge_plot.png",plot=RidgePlot(pbmc.hashtag, assay = argv$assayName, features = rownames(pbmc.hashtag[["HTO"]])[1:2], ncol = 2),path= argv$graphs)
+
