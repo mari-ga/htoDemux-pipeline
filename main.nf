@@ -44,6 +44,22 @@ process htoDemux {
     val featureScatter
     val scatterFeat1
     val scatterFeat2
+    val vlnplot
+    val vlnFeatures
+    val vlnLog
+    val tsne
+    val tseIdents
+    val tsneInvert
+    val tsePerplexity
+    val heatmap
+    val heatmapNcells
+    val cluster
+    val clusterIdents
+    val clusterSelMethod
+    val reductionMethod
+    val reductionDims
+    val reductionResol
+    val dimPlot
 
   output:
     stdout seurat_object
@@ -51,7 +67,9 @@ process htoDemux {
     """
     Rscript HTODemux-args.R --fileUmi ${umi_counts} --fileHto ${hto_matrix}  --selectMethod ${selection_method} --numberFeatures ${number_features} --normalisationMethod ${normalisation_method} --margin ${margin} 
     --assay ${assay} --assayName ${assayName} --kfunc ${kfunc} --htoDemuxOutPath ${htoDemuxOutPath} --graphs ${graphs} --nameOutputFile ${nameOutputFile} --ridgePlot ${ridgePlot} --ridgeNCol ${ridgeNCol}
-    --featureScatter ${featureScatter} --scatterFeat1 ${scatterFeat1} --scatterFeat2 ${scatterFeat2}
+    --featureScatter ${featureScatter} --scatterFeat1 ${scatterFeat1} --scatterFeat2 ${scatterFeat2} --vlnplot ${vlnplot} --vlnFeatures ${vlnFeatures} --vlnFeatures ${vlnFeatures}
+    --vlnLog ${vlnLog} --tsne ${tsne} --tseIdents ${tseIdents} --tsneInvert ${tsneInvert} --tsePerplexity ${tsePerplexity} --heatmap ${heatmap} --heatmapNcells ${heatmapNcells} --cluster ${cluster}
+    --clusterIdents ${clusterIdents} --clusterSelMethod ${clusterSelMethod} --reductionMethod ${reductionMethod} --reductionDims ${reductionDims} --reductionResol ${reductionResol} --dimPlot ${dimPlot}
     """
 
 
@@ -76,6 +94,22 @@ workflow {
   featureScatter = channel(params.featureScatter)
   scatterFeat1 = channel(params.scatterFeat1)
   scatterFeat2 = channel(params.scatterFeat2)
+  vlnplot =  channel(params.vlnplot)
+  vlnFeatures = channel(params.vlnFeatures)
+  vlnLog = channel(params.vlnLog)
+  tsne = channel(params.tsne)
+  tseIdents = channel(params.tseIdents)
+  tsneInvert = channel(params.tsneInvert)
+  tsePerplexity = channel(params.tsePerplexity)
+  heatmap = channel(params.heatmap)
+  heatmapNcells = channel(params.heatmapNcells)
+  cluster = channel(params.cluster)
+  clusterIdents = channel(params.clusterIdents)
+  clusterSelMethod = channel(params.clusterSelMethod)
+  reductionMethod = channel(params.reductionMethod)
+  reductionDims = channel(params.reductionDims)
+  reductionResol = channel(params.reductionResol)
+  dimPlot = channel(params.dimPlot)
 }
 
 
