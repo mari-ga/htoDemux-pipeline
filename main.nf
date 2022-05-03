@@ -33,13 +33,28 @@ process htoDemux {
     val normalisation_method
     val margin
     val assay
+    val assayName
+    var kfunc
+    path htoDemuxOutPath
+    path graphs
+    path nameOutputFile
+    val nameOutputFile
+    val ridgePlot
+    val ridgeNCol
+    val featureScatter
+    val scatterFeat1
+    val scatterFeat2
 
   output:
     stdout seurat_object
   script:
     """
-    Rscript HTODemux-args.R ${umi_counts} ${hto_matrix} ${selection_method} ${number_features} ${normalisation_method} ${margin} ${assay}
+    Rscript HTODemux-args.R --fileUmi ${umi_counts} --fileHto ${hto_matrix}  --selectMethod ${selection_method} --numberFeatures ${number_features} --normalisationMethod ${normalisation_method} --margin ${margin} 
+    --assay ${assay} --assayName ${assayName} --kfunc ${kfunc} --htoDemuxOutPath ${htoDemuxOutPath} --graphs ${graphs} --nameOutputFile ${nameOutputFile} --ridgePlot ${ridgePlot} --ridgeNCol ${ridgeNCol}
+    --featureScatter ${featureScatter} --scatterFeat1 ${scatterFeat1} --scatterFeat2 ${scatterFeat2}
     """
+
+
 
 }
 
@@ -51,6 +66,16 @@ workflow {
   normalisation_method = channel.value(params.normalisation_method)
   margin = channel.value(params.margin)
   assay = channel.value(params.assay)
+  assayName = channel.value(params.assayName)
+  kfunc = channel.value(params.kfunc)
+  htoDemuxOutPath = Channel.fromPath(params.htoDemuxOutPath)
+  graphs = Channel.fromPath(params.graphs)
+  nameOutputFile = channel(params.nameOutputFile)
+  ridgePlot = channel(params.ridgePlot)
+  ridgeNCol = channel(params.ridgeNCol)
+  featureScatter = channel(params.featureScatter)
+  scatterFeat1 = channel(params.scatterFeat1)
+  scatterFeat2 = channel(params.scatterFeat2)
 }
 
 
