@@ -10,7 +10,33 @@ nextflow.enable.dsl=2
     --normalisation_method
     --margin
     --assay
-    --help
+    --val assayName
+    --kfunc
+    --htoDemuxOutPath
+    --graphs
+    --nameOutputFile
+    --nameOutputFile
+    --ridgePlot
+    --ridgeNCol
+    --featureScatter
+    --scatterFeat1
+    --scatterFeat2
+    --vlnplot
+    --vlnFeatures
+    --vlnLog
+    --tsne
+    --tseIdents
+    --tsneInvert
+    --tsePerplexity
+    --heatmap
+    --heatmapNcells
+    --cluster
+    --clusterIdents
+    --clusterSelMethod
+    --reductionMethod
+    --reductionDims
+    --reductionResol
+    --dimPlot
 
   * Output    
     --outdir_binary
