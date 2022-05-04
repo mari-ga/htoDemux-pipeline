@@ -6,6 +6,7 @@
 - **nextflow.config:** Default parameters for the pipeline
 - **HTODemux.R:** HTODemux algorithm 
 - **HTODemux-visualisation.R:** HTODemux graphs
+- **multi-seq.R:** HTODemux algorithm 
 
 ### HTODemux 
 #### Input
