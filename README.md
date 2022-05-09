@@ -17,5 +17,6 @@
 
 ### MULTI-seq
 #### Input
-- S4 Seurat object.rds File
-- Path to save graphs
+- UMI Matrix.rds File
+- Hashtag counts matrix  .rds File. (*)
+- Parameters for MULTI-seq
