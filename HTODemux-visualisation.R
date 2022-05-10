@@ -7,11 +7,9 @@ library(ggplot2)
 # Create a parser
 p <- arg_parser("Parameters for HTODemux")
 p <- add_argument(p, "--pbcmHashtagPath",help="S4 object saved from the first part of HTODemux", default = NULL)
-
-
-p <- add_argument(p, "--htoDemuxOutPath",help="Path to file where the results of htoDemux will be saved", default = NULL)
-
 p <- add_argument(p, "--graphs",help="Path to folder where the graphs produced from the HTODemux function can be saved", default = NULL)
+p <- add_argument(p, "--assayName",help="Name of the Hashtag assay HTO by default",default="HTO")
+
 #Output graphs - Ridge Plot
 p <- add_argument(p, "--ridgePlot",help="Generates a ridge plot from the results, True to generate", default = FALSE)
 p <- add_argument(p, "--ridgeNCol",help="Number of columns for ridgePlot", default = 2)
@@ -49,6 +47,8 @@ argv <- parse_args(p)
 print(argv$pbcmHashtagPath)
 #"/Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/nextflow-files/htoDemux-pipeline/results/results.rds"
 pbmc.hashtag <-readRDS(argv$pbcmHashtagPath)
+
+str(pbmc.hashtag)
 
 graphsPath <- argv$graphs
 # Ridge Plot

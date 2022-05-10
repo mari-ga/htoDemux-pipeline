@@ -23,6 +23,7 @@ p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 p <- add_argument(p, "--selectMethod",help="Selection method", default="vst")
 p <- add_argument(p, "--numberFeatures",help="Number of features to be used when finding variable features", type="numeric", default=2000)
 p <- add_argument(p, "--assay",help="Choose assay between RNA or HTO",default="HTO")
+p <- add_argument(p, "--graphs",help="Path to folder where the graphs produced from the HTODemux function can be saved", default = NULL)
 
 #Parameters - section 3
 p <- add_argument(p, "--normalisationMethod",help="Normalisation method", default="CLR")
@@ -40,14 +41,17 @@ p <- add_argument(p, "--htoDemuxOutPath",help="Path to file where the results of
 p <- add_argument(p, "--nameOutputFile",help="Name for the file containing the output of HTODemux hashtag", default = "result.csv")
 
 
+#Output graphs - tSNE
+p <- add_argument(p, "--tsne",help="Generate a two dimensional tSNE embedding for HTOs", default = FALSE)
+p <- add_argument(p, "--tseIdents",help="What should we remove from the object (we have Singlet,Doublet and Negative)", default = "Negative")
+p <- add_argument(p, "--tsneInvert",help="True or False", default = TRUE)
+p <- add_argument(p, "--tsePerplexity",help="value for perplexity", type="numeric",  default = 100)
 
 argv <- parse_args(p)
 
 
 #---------------- Section 1 - Input files -----------------
 pbmc.umis <-readRDS(argv$fileUmi)
-print(pbmc.umis)
-
 pbmc.htos <- readRDS(argv$fileHto)
 
 
@@ -66,8 +70,9 @@ rownames(pbmc.htos)
 #Setup Seurat object and add in the HTO data
 
 # Setup Seurat object
-pbmc.hashtag <- CreateSeuratObject(counts = pbmc.umis, assay =argv$assay )
-pbmc.hashtag
+pbmc.hashtag <- CreateSeuratObject(counts = pbmc.umis)
+
+str(pbmc.hashtag)
 
 # Normalize RNA data with log normalization
 pbmc.hashtag <- NormalizeData(pbmc.hashtag)
@@ -113,8 +118,18 @@ file_results <-create_files(argv$nameOutputFile, argv$htoDemuxOutPath,".csv")
 write.csv(pbmc.hashtag$HTO_classification.global, file=file_results)
 pbmc_file = paste(argv$htoDemuxOutPath,argv$nameOutputFile,".rds",sep="")
 print(pbmc_file)
-save(pbmc.hashtag, file=pbmc_file)
+saveRDS(pbmc.hashtag, file=pbmc_file)
 
 
-
-
+if(argv$tsne){
+  # First, we will remove negative cells from the object
+  pbmc.hashtag.subset <- subset(pbmc.hashtag, idents = "Negative", invert = TRUE)
+  DefaultAssay(pbmc.hashtag.subset) <- "HTO"
+  pbmc.hashtag.subset <- ScaleData(pbmc.hashtag.subset, features = rownames(pbmc.hashtag.subset),verbose = FALSE)
+  pbmc.hashtag.subset <- RunPCA(pbmc.hashtag.subset, features = rownames(pbmc.hashtag.subset), approx = FALSE)
+  pbmc.hashtag.subset <- RunTSNE(pbmc.hashtag.subset, dims = 1:8, perplexity = 100)
+  plot4<-DimPlot(pbmc.hashtag.subset)
+  png(paste(graphsPath,"tSNE.png",sep=""))
+  print(plot4)
+  dev.off()
+}
