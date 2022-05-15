@@ -44,7 +44,6 @@ str(pbmc.hashtag)
 
 
 #------------------ Section 3 - adding HTO data as an independent assay ---------------------
-# Add HTO data as a new assay independent from RNA
 
 # Normalize HTO data, here we use centered log-ratio (CLR) transformation
 pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
