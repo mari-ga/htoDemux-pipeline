@@ -13,13 +13,7 @@ library(ggplot2)
 # Create a parser
 p <- arg_parser("Parameters for MULTI-seq")
 
-p <- add_argument(p, "--fileUmi",help="Path to file UMI count matrix")
-p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
-
-#Parameters - section 2
-p <- add_argument(p, "--selectMethod",help="Selection method", default="vst")
-p <- add_argument(p, "--numberFeatures",help="Number of features to be used when finding variable features", type="numeric", default=2000)
-p <- add_argument(p, "--assay",help="Choose assay between RNA or HTO",default="HTO")
+p <- add_argument(p, "--seuratObjectPath",help="seurat object ready for demultiplex step", default = NULL)
 
 #Parameters - section 3
 p <- add_argument(p, "--normalisationMethod",help="Normalisation method", default="CLR")
@@ -36,40 +30,11 @@ p <- add_argument(p, "--qrangeBy",help="A range of possible quantile values to t
 p <- add_argument(p, "--verbose",help="Prints the output", default = TRUE)
 
 argv <- parse_args(p)
-#---------------- Section 1 - Input files -----------------
-pbmc.umis <-readRDS(argv$fileUmi)
-print(pbmc.umis)
-
-pbmc.htos <- readRDS(argv$fileHto)
 
 
-#Identify which UMI corresponds to which hashtag.
-joint.bcs <- intersect(colnames(pbmc.umis), colnames(pbmc.htos))
 
-# Subset RNA and HTO counts by joint cell barcodes
-pbmc.umis <- pbmc.umis[, joint.bcs]
-pbmc.htos <- as.matrix(pbmc.htos[, joint.bcs])
-
-# Confirm that the HTO have the correct names
-rownames(pbmc.htos)
-
-#-------------------- Section 2 - Setup Seurat ---------------------------------------
-
-#Setup Seurat object and add in the HTO data
-
-# Setup Seurat object
-pbmc.hashtag <- CreateSeuratObject(counts = pbmc.umis, assay =argv$assay )
-pbmc.hashtag
-
-# Normalize RNA data with log normalization
-pbmc.hashtag <- NormalizeData(pbmc.hashtag)
-# Find and scale variable features
-pbmc.hashtag <- FindVariableFeatures(pbmc.hashtag, selection.method = argv$selectMethod, nfeatures=argv$numberFeatures)
-pbmc.hashtag <- ScaleData(pbmc.hashtag, features = VariableFeatures(pbmc.hashtag))
-
-#------------------ Section 3 - adding HTO data as an independent assay ---------------------
-# Add HTO data as a new assay independent from RNA
-pbmc.hashtag[["HTO"]] <- CreateAssayObject(counts = pbmc.htos)
+pbmc.hashtag <-readRDS(argv$seuratObjectPath)
+str(pbmc.hashtag)
 # Normalize HTO data, here we use centered log-ratio (CLR) transformation
 pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
 
