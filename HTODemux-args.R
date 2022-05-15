@@ -18,6 +18,11 @@ p <- arg_parser("Parameters for HTODemux")
 
 p <- add_argument(p, "--seuratObjectPath",help="seurat object ready for demultiplex step", default = NULL)
 
+#Parameters - section 3
+p <- add_argument(p, "--normalisationMethod",help="Normalisation method", default="CLR")
+p <- add_argument(p, "--margin",help="Margin for normalisation", type="numeric",default=2)
+p <- add_argument(p, "--assayName",help="Name of the Hashtag assay HTO by default",default="HTO")
+
 #parameters - section 4
 p <- add_argument(p, "--quantile",help="Positive quantile per default: 0.99", type="numeric",default=0.99)
 p <- add_argument(p, "--kfunc",help="Cluster function choose between: Clara - kmeans",default="clara")
@@ -35,6 +40,15 @@ argv <- parse_args(p)
 
 pbmc.hashtag <-readRDS(argv$seuratObjectPath)
 str(pbmc.hashtag)
+
+
+
+#------------------ Section 3 - adding HTO data as an independent assay ---------------------
+# Add HTO data as a new assay independent from RNA
+
+# Normalize HTO data, here we use centered log-ratio (CLR) transformation
+pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
+
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
 
 pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile,  nstarts = argv$nstarts, nsamples = argv$nsamples)
