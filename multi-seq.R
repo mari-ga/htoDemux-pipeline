@@ -28,12 +28,14 @@ p <- add_argument(p, "--assayName",help="Name of the Hashtag assay HTO by defaul
 
 #parameters - section 4
 p <- add_argument(p, "--quantile",help="Positive quantile per default: 0.7", type="numeric",default=0.7)
-p <- add_argument(p, "--autoThresh",help="Whether to perform automated threshold finding to define the best quantile, per Default=False",default=FALSE)
+p <- add_argument(p, "--autoThresh",help="Whether to perform automated threshold finding to define the best quantile, per Default=False",default=TRUE)
 p <- add_argument(p, "--maxiter",help="Maximum number of iterations", type="numeric",default=5)
-p <- add_argument(p, "--qrange",help="A range of possible quantile values to try if autoThresh is TRUE", nargs=3, type="numeric")
+p <- add_argument(p, "--qrangeFrom",help="A range of possible quantile values to try if autoThresh is TRUE",type="numeric", default = 0.1)
+p <- add_argument(p, "--qrangeTo",help="A range of possible quantile values to try if autoThresh is TRUE",type="numeric", default = 0.9)
+p <- add_argument(p, "--qrangeBy",help="A range of possible quantile values to try if autoThresh is TRUE",type="numeric", default = 0.05)
 p <- add_argument(p, "--verbose",help="Prints the output", default = TRUE)
 
- 
+argv <- parse_args(p)
 #---------------- Section 1 - Input files -----------------
 pbmc.umis <-readRDS(argv$fileUmi)
 print(pbmc.umis)
@@ -74,6 +76,6 @@ pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalizatio
 
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
 
-pbmc.hashtag <- MULTIseqDemux(pbmc.hashtag, assay = argv$assayName,  quantile = args$quantile, autoThresh = args$autoThresh, qrange=seq(from = argv$qrange, to =argv$qrange, by=argv$qrange), verbose=argv$verbose)
+pbmc.hashtag <- MULTIseqDemux(pbmc.hashtag, assay = argv$assayName,  quantile = args$quantile, autoThresh = TRUE , qrange=seq(from = argv$qrangeFrom, to =argv$qrangeTo, by=argv$qrangeBy), verbose=argv$verbose)
 
 

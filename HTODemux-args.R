@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
-#install.packages("Seurat",repos=("http://cran.rstudio.com"))
-#install.packages("spatstat.sparse",repos=("http://cran.rstudio.com"))
-#install.packages('argparser', repos=("http://cran.rstudio.com"))
+install.packages("Seurat",repos=("http://cran.rstudio.com"))
+install.packages("spatstat.sparse",repos=("http://cran.rstudio.com"))
+install.packages('argparser', repos=("http://cran.rstudio.com"))
 #Receive arguments from command line
 options(echo=TRUE)
 
@@ -121,15 +121,3 @@ print(pbmc_file)
 saveRDS(pbmc.hashtag, file=pbmc_file)
 
 
-if(argv$tsne){
-  # First, we will remove negative cells from the object
-  pbmc.hashtag.subset <- subset(pbmc.hashtag, idents = "Negative", invert = TRUE)
-  DefaultAssay(pbmc.hashtag.subset) <- "HTO"
-  pbmc.hashtag.subset <- ScaleData(pbmc.hashtag.subset, features = rownames(pbmc.hashtag.subset),verbose = FALSE)
-  pbmc.hashtag.subset <- RunPCA(pbmc.hashtag.subset, features = rownames(pbmc.hashtag.subset), approx = FALSE)
-  pbmc.hashtag.subset <- RunTSNE(pbmc.hashtag.subset, dims = 1:8, perplexity = 100)
-  plot4<-DimPlot(pbmc.hashtag.subset)
-  png(paste(graphsPath,"tSNE.png",sep=""))
-  print(plot4)
-  dev.off()
-}
