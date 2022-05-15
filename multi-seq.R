@@ -79,3 +79,7 @@ pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalizatio
 pbmc.hashtag <- MULTIseqDemux(pbmc.hashtag, assay = argv$assayName,  quantile = args$quantile, autoThresh = TRUE , qrange=seq(from = argv$qrangeFrom, to =argv$qrangeTo, by=argv$qrangeBy), verbose=argv$verbose)
 
 
+table(pbmc.hashtag$MULTI_ID)
+print("----------------------------------------------------------------------------")
+table(pbmc.hashtag$MULTI_classification)
+print("----------------------------------------------------------------------------")
