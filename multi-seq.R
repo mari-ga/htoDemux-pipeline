@@ -29,6 +29,10 @@ p <- add_argument(p, "--qrangeTo",help="A range of possible quantile values to t
 p <- add_argument(p, "--qrangeBy",help="A range of possible quantile values to try if autoThresh is TRUE",type="numeric", default = 0.05)
 p <- add_argument(p, "--verbose",help="Prints the output", default = TRUE)
 
+#Output paths
+p <- add_argument(p, "--multiSeqOutPath",help="Path to file where the results of MULTI-seq will be saved", default = NULL)
+p <- add_argument(p, "--nameOutputFile",help="Name for the file containing the output of MULTI-Seq object", default = "result.csv")
+
 argv <- parse_args(p)
 
 
@@ -48,3 +52,29 @@ table(pbmc.hashtag$MULTI_ID)
 print("----------------------------------------------------------------------------")
 table(pbmc.hashtag$MULTI_classification)
 print("----------------------------------------------------------------------------")
+
+
+#------------------Section 5 - Saving results ---------------------------"
+
+create_files <- function(name, path,extension) {
+  path_complete <- paste(path, name,extension,sep="")
+  print(path_complete)
+  if (file.exists(path_complete)) {
+    print("The file already exists...")
+    return(-1)
+  } else {
+    print("Created new file with results")
+    file.create(path_complete)
+    return(path_complete)
+  }
+}
+
+
+#Save Results
+print(argv$nameOutputFile)
+print("-------")
+file_results <-create_files(argv$nameOutputFile, argv$multiSeqOutPath,".csv")
+write.csv(pbmc.hashtag$MULTI_ID, file=file_results)
+pbmc_file = paste(argv$multiSeqOutPath,argv$nameOutputFile,".rds",sep="")
+print(pbmc_file)
+saveRDS(pbmc.hashtag, file=pbmc_file)
