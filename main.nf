@@ -4,44 +4,17 @@ nextflow.enable.dsl=2
  * Input: 
     --umi-matrix.rds <path>
     --hashtag-counts-matrix.rds <path>
-    Parameters for HTODemux process:
+    Parameters for Pre-processing (Seurat object creation):
     --selection_method
     --number_features
     --normalisation_method
     --margin
     --assay
-    --val assayName
-    --kfunc
-    --htoDemuxOutPath
-    --graphs
+    --assayName
+    --demulOutPath
     --nameOutputFile
-    --nameOutputFile
-    --ridgePlot
-    --ridgeNCol
-    --featureScatter
-    --scatterFeat1
-    --scatterFeat2
-    --vlnplot
-    --vlnFeatures
-    --vlnLog
-    --tsne
-    --tseIdents
-    --tsneInvert
-    --tsePerplexity
-    --heatmap
-    --heatmapNcells
-    --cluster
-    --clusterIdents
-    --clusterSelMethod
-    --reductionMethod
-    --reductionDims
-    --reductionResol
-    --dimPlot
-
-  * Output    
-    --outdir_binary
-    --outdir_ascii
-    --out_stdout
+    
+    
 */
 log.info """\
  Demultiplexing - P I P E L I N E
@@ -56,7 +29,6 @@ process preProcess{
   input:
     path umi_counts
     path hto_matrix
-
     val selection_method
     val number_features
     val assay
