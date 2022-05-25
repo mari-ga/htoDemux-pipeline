@@ -56,6 +56,7 @@ process preProcess{
   input:
     path umi_counts
     path hto_matrix
+
     val selection_method
     val number_features
     val assay
@@ -65,6 +66,9 @@ process preProcess{
     val demulOutPath
     var nameOutputFile
 
+
+  println selection_method
+  println number_features
   output:
     path 'object' 
   
@@ -81,20 +85,14 @@ process preProcess{
 
 
 
-workflow {
-  umi = Channel.fromPath(params.umi_count)
-  hto_matrix =  Channel.fromPath(params.hto_mat)
-  selection_method = params.selection_method
-  number_features = params.number_features
-  normalisation_method = params.normalisation_method
-  margin = params.margin
-  assay = params.assay
-  assayName = params.assayName
-  demulOutPath = params.demulOutPath
-  nameOutputFile = params.nameOutputFile
-
-  preProcess(umi,hto_matrix, selection_method, number_features, assay, assayName, margin, normalisation_method,demulOutPath, nameOutputFile)
-  
+workflow{
+  take:
+    def umi = Channel.fromPath(params.umi_count)
+    def hto_matrix =  Channel.fromPath(params.hto_mat)
+  main:
+    preProcess(umi, hto_matrix, params.selection_method, params.number_features, params.assay, params.assayName, params.margin, params.normalisation_method, params.demulOutPath, params.nameOutputFile)
+  emit:
+	    preProcess.out
 }
 
 
