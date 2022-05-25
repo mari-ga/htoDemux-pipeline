@@ -1,0 +1,44 @@
+may.-25 15:15:36.441 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
+may.-25 15:15:36.492 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 22.04.0
+may.-25 15:15:36.513 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/nextflow.config
+may.-25 15:15:36.514 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/nextflow.config
+may.-25 15:15:36.537 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+may.-25 15:15:37.186 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [maniac_ampere] DSL2 - revision: 1f85adfc9b
+may.-25 15:15:37.201 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/Users/mylenemarianagonzalesandre/.nextflow/plugins; core-plugins: nf-amazon@1.7.1,nf-azure@0.13.1,nf-console@1.0.3,nf-ga4gh@1.0.3,nf-google@1.1.4,nf-sqldb@0.4.0,nf-tower@1.4.0
+may.-25 15:15:37.202 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+may.-25 15:15:37.214 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+may.-25 15:15:37.215 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+may.-25 15:15:37.218 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+may.-25 15:15:37.228 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+may.-25 15:15:37.289 [main] DEBUG nextflow.Session - Session uuid: 288076d7-3bec-4725-ad3f-50978fdf2809
+may.-25 15:15:37.289 [main] DEBUG nextflow.Session - Run name: maniac_ampere
+may.-25 15:15:37.290 [main] DEBUG nextflow.Session - Executor pool size: 12
+may.-25 15:15:37.565 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 22.04.0 build 5697
+  Created: 23-04-2022 18:00 UTC (20:00 GMT+02:00)
+  System: Mac OS X 12.3.1
+  Runtime: Groovy 3.0.10 on OpenJDK 64-Bit Server VM 11.0.13+7-b1751.21
+  Encoding: UTF-8 (UTF-8)
+  Process: 12291@MacBook-Pro-de-Mylene.local [127.0.0.1]
+  CPUs: 12 - Mem: 16 GB (65.5 MB) - Swap: 1 GB (608 MB)
+may.-25 15:15:37.582 [main] DEBUG nextflow.Session - Work-dir: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/work [Mac OS X]
+may.-25 15:15:37.582 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/bin
+may.-25 15:15:37.595 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+may.-25 15:15:37.616 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+may.-25 15:15:37.652 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+may.-25 15:15:37.666 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 13; maxThreads: 1000
+may.-25 15:15:37.751 [main] DEBUG nextflow.Session - Session start invoked
+may.-25 15:15:37.910 [main] ERROR nextflow.cli.Launcher - Script compilation error
+- file : /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/main.nf
+- cause: Workflow malformed parameter definition @ line 90, column 5.
+       def umi = Channel.fromPath(params.umi_count)
+       ^
+
+Script compilation error
+- file : /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/main.nf
+- cause: Workflow malformed parameter definition @ line 91, column 5.
+       def hto_matrix =  Channel.fromPath(params.hto_mat)
+       ^
+
+2 errors
+

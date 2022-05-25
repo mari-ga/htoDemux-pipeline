@@ -1,44 +1,76 @@
-may.-25 14:56:18.548 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
-may.-25 14:56:18.632 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 22.04.0
-may.-25 14:56:18.654 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/nextflow.config
-may.-25 14:56:18.655 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/nextflow.config
-may.-25 14:56:18.680 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
-may.-25 14:56:19.301 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [lethal_shockley] DSL2 - revision: 1f85adfc9b
-may.-25 14:56:19.316 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/Users/mylenemarianagonzalesandre/.nextflow/plugins; core-plugins: nf-amazon@1.7.1,nf-azure@0.13.1,nf-console@1.0.3,nf-ga4gh@1.0.3,nf-google@1.1.4,nf-sqldb@0.4.0,nf-tower@1.4.0
-may.-25 14:56:19.318 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
-may.-25 14:56:19.329 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
-may.-25 14:56:19.331 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
-may.-25 14:56:19.334 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
-may.-25 14:56:19.345 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
-may.-25 14:56:19.411 [main] DEBUG nextflow.Session - Session uuid: 377b0baf-6b63-4795-a709-76ab541fff52
-may.-25 14:56:19.411 [main] DEBUG nextflow.Session - Run name: lethal_shockley
-may.-25 14:56:19.411 [main] DEBUG nextflow.Session - Executor pool size: 12
-may.-25 14:56:19.631 [main] DEBUG nextflow.cli.CmdRun - 
+may.-25 15:36:34.920 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
+may.-25 15:36:34.978 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 22.04.0
+may.-25 15:36:34.995 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/nextflow.config
+may.-25 15:36:34.995 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/nextflow.config
+may.-25 15:36:35.012 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+may.-25 15:36:35.526 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [magical_fourier] DSL2 - revision: a2c02103f9
+may.-25 15:36:35.538 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/Users/mylenemarianagonzalesandre/.nextflow/plugins; core-plugins: nf-amazon@1.7.1,nf-azure@0.13.1,nf-console@1.0.3,nf-ga4gh@1.0.3,nf-google@1.1.4,nf-sqldb@0.4.0,nf-tower@1.4.0
+may.-25 15:36:35.539 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+may.-25 15:36:35.549 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+may.-25 15:36:35.551 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+may.-25 15:36:35.555 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+may.-25 15:36:35.564 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+may.-25 15:36:35.626 [main] DEBUG nextflow.Session - Session uuid: d51a94b4-acdf-498c-bee4-e6e63f620af8
+may.-25 15:36:35.626 [main] DEBUG nextflow.Session - Run name: magical_fourier
+may.-25 15:36:35.626 [main] DEBUG nextflow.Session - Executor pool size: 12
+may.-25 15:36:35.661 [main] DEBUG nextflow.cli.CmdRun - 
   Version: 22.04.0 build 5697
   Created: 23-04-2022 18:00 UTC (20:00 GMT+02:00)
   System: Mac OS X 12.3.1
   Runtime: Groovy 3.0.10 on OpenJDK 64-Bit Server VM 11.0.13+7-b1751.21
   Encoding: UTF-8 (UTF-8)
-  Process: 12013@MacBook-Pro-de-Mylene.local [127.0.0.1]
-  CPUs: 12 - Mem: 16 GB (67.1 MB) - Swap: 1 GB (576 MB)
-may.-25 14:56:19.645 [main] DEBUG nextflow.Session - Work-dir: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/work [Mac OS X]
-may.-25 14:56:19.645 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/bin
-may.-25 14:56:19.659 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
-may.-25 14:56:19.674 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
-may.-25 14:56:19.717 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
-may.-25 14:56:19.752 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 13; maxThreads: 1000
-may.-25 14:56:19.840 [main] DEBUG nextflow.Session - Session start invoked
-may.-25 14:56:20.053 [main] ERROR nextflow.cli.Launcher - Script compilation error
-- file : /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/main.nf
-- cause: Workflow malformed parameter definition @ line 90, column 5.
-       def umi = Channel.fromPath(params.umi_count)
-       ^
+  Process: 12727@MacBook-Pro-de-Mylene.local [127.0.0.1]
+  CPUs: 12 - Mem: 16 GB (50 MB) - Swap: 1 GB (640 MB)
+may.-25 15:36:35.673 [main] DEBUG nextflow.Session - Work-dir: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/work [Mac OS X]
+may.-25 15:36:35.673 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/bin
+may.-25 15:36:35.686 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+may.-25 15:36:35.697 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+may.-25 15:36:35.717 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+may.-25 15:36:35.728 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 13; maxThreads: 1000
+may.-25 15:36:35.801 [main] DEBUG nextflow.Session - Session start invoked
+may.-25 15:36:36.045 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+may.-25 15:36:36.058 [main] INFO  nextflow.Nextflow -  Demultiplexing - P I P E L I N E
+ ===================================
+ Input Files:
 
-Script compilation error
-- file : /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/main.nf
-- cause: Workflow malformed parameter definition @ line 91, column 5.
-       def hto_matrix =  Channel.fromPath(params.hto_mat)
-       ^
-
-2 errors
-
+ UMI-Counts: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/data/pbmc_umi_mtx.rds
+ HTO-Matrix: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/data/pbmc_hto_mtx.rds
+ 
+may.-25 15:36:36.152 [main] DEBUG nextflow.Session - Session aborted -- Cause: Process `preProcess` declares 9 input channels but 10 were specified
+may.-25 15:36:36.166 [main] ERROR nextflow.cli.Launcher - Process `preProcess` declares 9 input channels but 10 were specified
+nextflow.exception.ScriptRuntimeException: Process `preProcess` declares 9 input channels but 10 were specified
+	at nextflow.script.ProcessDef.run(ProcessDef.groovy:175)
+	at nextflow.script.BindableDef.invoke_a(BindableDef.groovy:52)
+	at nextflow.script.ComponentDef.invoke_o(ComponentDef.groovy:41)
+	at nextflow.script.WorkflowBinding.invokeMethod(WorkflowBinding.groovy:94)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeOnDelegationObjects(ClosureMetaClass.java:408)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:350)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.callCurrent(PogoMetaClassSite.java:61)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:51)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:171)
+	at Script_6210140a$_runScript_closure2$_closure5.doCall(Script_6210140a:97)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:107)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:274)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1035)
+	at groovy.lang.Closure.call(Closure.java:412)
+	at groovy.lang.Closure.call(Closure.java:406)
+	at nextflow.script.WorkflowDef.run0(WorkflowDef.groovy:205)
+	at nextflow.script.WorkflowDef.run(WorkflowDef.groovy:189)
+	at nextflow.script.BindableDef.invoke_a(BindableDef.groovy:52)
+	at nextflow.script.ChainableDef$invoke_a.call(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:139)
+	at nextflow.script.BaseScript.runDsl2(BaseScript.groovy:194)
+	at nextflow.script.BaseScript.run(BaseScript.groovy:203)
+	at nextflow.script.ScriptParser.runScript(ScriptParser.groovy:220)
+	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:212)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:120)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:334)
+	at nextflow.cli.Launcher.run(Launcher.groovy:480)
+	at nextflow.cli.Launcher.main(Launcher.groovy:639)
