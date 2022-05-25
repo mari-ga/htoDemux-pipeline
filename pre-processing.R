@@ -85,6 +85,7 @@ create_files <- function(name, path,extension) {
 
 #Save Results
 print(argv$nameOutputFile)
-pbmc_file = paste(argv$demuxOutPath,argv$nameOutputFile,".rds",sep="")
+pbmc_file = paste(argv$demulOutPath,argv$nameOutputFile,".rds",sep="")
+print(pbmc_file)
 saveRDS(pbmc.hashtag, file=pbmc_file)
 
