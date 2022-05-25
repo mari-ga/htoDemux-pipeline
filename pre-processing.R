@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
-install.packages("Seurat",repos=("http://cran.rstudio.com"))
-install.packages("spatstat.sparse",repos=("http://cran.rstudio.com"))
-install.packages('argparser', repos=("http://cran.rstudio.com"))
+#install.packages("Seurat",repos=("http://cran.rstudio.com"))
+#install.packages("spatstat.sparse",repos=("http://cran.rstudio.com"))
+#install.packages('argparser', repos=("http://cran.rstudio.com"))
 #Receive arguments from command line
 options(echo=TRUE)
 
@@ -23,7 +23,6 @@ p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 p <- add_argument(p, "--selectMethod",help="Selection method", default="vst")
 p <- add_argument(p, "--numberFeatures",help="Number of features to be used when finding variable features", type="numeric", default=2000)
 p <- add_argument(p, "--assay",help="Choose assay between RNA or HTO",default="HTO")
-p <- add_argument(p, "--graphs",help="Path to folder where the graphs produced from the HTODemux function can be saved", default = NULL)
 
 #Parameters - section 3
 p <- add_argument(p, "--normalisationMethod",help="Normalisation method", default="CLR")
@@ -31,7 +30,7 @@ p <- add_argument(p, "--margin",help="Margin for normalisation", type="numeric",
 p <- add_argument(p, "--assayName",help="Name of the Hashtag assay HTO by default",default="HTO")
 
 #Output paths
-p <- add_argument(p, "--demuxOutPath",help="Path to file where the rds object ready for demultiplexing will be saved", default = NULL)
+p <- add_argument(p, "--demulOutPath",help="Path to file where the rds object ready for demultiplexing will be saved", default = NULL)
 p <- add_argument(p, "--nameOutputFile",help="Name for the file containing the output of HTODemux hashtag", default = "result")
 
 argv <- parse_args(p)
@@ -54,22 +53,16 @@ rownames(pbmc.htos)
 #-------------------- Section 2 - Setup Seurat ---------------------------------------
 
 #Setup Seurat object and add in the HTO data
-
 # Setup Seurat object
 pbmc.hashtag <- CreateSeuratObject(counts = pbmc.umis)
 
 str(pbmc.hashtag)
 
-# Normalize RNA data with log normalization
-pbmc.hashtag <- NormalizeData(pbmc.hashtag)
-# Find and scale variable features
-pbmc.hashtag <- FindVariableFeatures(pbmc.hashtag, selection.method = argv$selectMethod, nfeatures=argv$numberFeatures)
-pbmc.hashtag <- ScaleData(pbmc.hashtag, features = VariableFeatures(pbmc.hashtag))
 
 #------------------ Section 3 - adding HTO data as an independent assay ---------------------
 # Add HTO data as a new assay independent from RNA
-pbmc.hashtag[["HTO"]] <- CreateAssayObject(counts = pbmc.htos)
-# Normalize HTO data, here we use centered log-ratio (CLR) transformation
+pbmc.hashtag[[argv$assayName]] <- CreateAssayObject(counts = pbmc.htos)
+# Normalize HTO data
 pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
 
 str(pbmc.hashtag)

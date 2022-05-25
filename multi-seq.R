@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
-install.packages("Seurat",repos=("http://cran.rstudio.com"))
+#install.packages("Seurat",repos=("http://cran.rstudio.com"))
 #install.packages("spatstat.sparse",repos=("http://cran.rstudio.com"))
-install.packages('argparser', repos=("http://cran.rstudio.com"))
+#install.packages('argparser', repos=("http://cran.rstudio.com"))
 #Receive arguments from command line
 options(echo=TRUE)
 
@@ -15,10 +15,7 @@ p <- arg_parser("Parameters for MULTI-seq")
 
 p <- add_argument(p, "--seuratObjectPath",help="seurat object ready for demultiplex step", default = NULL)
 
-#Parameters - section 3
-p <- add_argument(p, "--normalisationMethod",help="Normalisation method", default="CLR")
-p <- add_argument(p, "--margin",help="Margin for normalisation", type="numeric",default=2)
-p <- add_argument(p, "--assayName",help="Name of the Hashtag assay HTO by default",default="HTO")
+
 
 #parameters - section 4
 p <- add_argument(p, "--quantile",help="Positive quantile per default: 0.7", type="numeric",default=0.7)
@@ -40,7 +37,7 @@ argv <- parse_args(p)
 pbmc.hashtag <-readRDS(argv$seuratObjectPath)
 str(pbmc.hashtag)
 # Normalize HTO data, here we use centered log-ratio (CLR) transformation
-pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
+#pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
 
 
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
@@ -54,27 +51,52 @@ table(pbmc.hashtag$MULTI_classification)
 print("----------------------------------------------------------------------------")
 
 
+print("-----------------------------------------------")
+
+pbmc.hashtag
+print("-----------------------------------------------")
+
+dim(x = pbmc.hashtag)
+print("-----------------------------------------------")
+
+head(x = rownames(x = pbmc.hashtag))
+
+head(x = colnames(x = pbmc.hashtag))
+
+names(x = pbmc.hashtag)
+
+print("-----------------------------------------------")
+
+pbmc.hashtag[['RNA']]
+print("-----------------------------------------------")
+pbmc.hashtag[['HTO']]
+
+print("-----------------------------------------------")
+
+colnames(x = pbmc.hashtag[[]])
+
+
 #------------------Section 5 - Saving results ---------------------------"
 
-create_files <- function(name, path,extension) {
-  path_complete <- paste(path, name,extension,sep="")
-  print(path_complete)
-  if (file.exists(path_complete)) {
-    print("The file already exists...")
-    return(-1)
-  } else {
-    print("Created new file with results")
-    file.create(path_complete)
-    return(path_complete)
-  }
-}
+# create_files <- function(name, path,extension) {
+#   path_complete <- paste(path, name,extension,sep="")
+#   print(path_complete)
+#   if (file.exists(path_complete)) {
+#     print("The file already exists...")
+#     return(-1)
+#   } else {
+#     print("Created new file with results")
+#     file.create(path_complete)
+#     return(path_complete)
+#   }
+# }
 
 
 #Save Results
-print(argv$nameOutputFile)
-print("-------")
-file_results <-create_files(argv$nameOutputFile, argv$multiSeqOutPath,".csv")
-write.csv(pbmc.hashtag$MULTI_ID, file=file_results)
-pbmc_file = paste(argv$multiSeqOutPath,argv$nameOutputFile,".rds",sep="")
-print(pbmc_file)
-saveRDS(pbmc.hashtag, file=pbmc_file)
+# print(argv$nameOutputFile)
+# print("-------")
+# file_results <-create_files(argv$nameOutputFile, argv$multiSeqOutPath,".csv")
+# write.csv(pbmc.hashtag$MULTI_ID, file=file_results)
+# pbmc_file = paste(argv$multiSeqOutPath,argv$nameOutputFile,".rds",sep="")
+# print(pbmc_file)
+# saveRDS(pbmc.hashtag, file=pbmc_file)
