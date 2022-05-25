@@ -82,13 +82,24 @@ process preProcess{
 
 
 workflow {
-  
+  umi = Channel.fromPath(params.umi_count)
+  hto_matrix =  Channel.fromPath(params.hto_mat)
+  selection_method = params.selection_method
+  number_features = params.number_features
+  normalisation_method = params.normalisation_method
+  margin = params.margin
+  assay = params.assay
+  assayName = params.assayName
+  demulOutPath = params.demulOutPath
+  nameOutputFile = params.nameOutputFile
+
+  preProcess(umi,hto_matrix, selection_method, number_features, assay, assayName, margin, normalisation_method,demulOutPath, nameOutputFile)
   
 }
 
 
 workflow.onComplete { 
-  println ("workflow.success ? \nDone")
+  println ("Done")
 }
 
 
