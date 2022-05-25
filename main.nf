@@ -36,7 +36,7 @@ process preProcess{
     val margin
     val normalisation_method
     val demulOutPath
-    var nameOutputFile
+    val nameOutputFile
 
   output:
     path 'object' 
@@ -54,7 +54,7 @@ process preProcess{
   def fileName = " --nameOutputFile $nameOutputFile"
 
   """
-    Rscript pre-processing.R $umiFile $htoFile $selectMethod $assay $assayName $margin $normalisationMethod $demulOutPath $fileName
+    pre-processing.R ${umiFile} ${htoFile} ${selectMethod} ${numberFeatures} ${assay} ${assayName} ${margin} ${normalisationMethod} ${demulOutPath} ${fileName}
   """
 
 }
@@ -66,7 +66,7 @@ workflow{
     def umi = Channel.fromPath(params.umi_count)
     def hto_matrix =  Channel.fromPath(params.hto_mat)
   main:
-    preProcess(umi, hto_matrix, params.selection_method, params.number_features, params.assay, params.assayName, params.margin, params.normalisation_method, params.demulOutPath, params.nameOutputFile)
+    preProcess(umi,hto_matrix,params.selection_method, params.number_features, params.assay, params.assayName, params.margin, params.normalisation_method, params.demulOutPath, params.nameOutputFile)
   emit:
 	    preProcess.out
 }
