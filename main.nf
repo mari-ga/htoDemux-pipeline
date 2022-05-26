@@ -54,7 +54,8 @@ process preProcess{
   def fileName = " --nameOutputFile $nameOutputFile"
 
   """
-    pre-processing.R ${umiFile} ${htoFile} ${selectMethod} ${numberFeatures} ${assay} ${assayName} ${margin} ${normalisationMethod} ${demulOutPath} ${fileName}
+  echo "Doing something"
+  pre_processing.R ${umiFile} ${htoFile} ${selectMethod} ${numberFeatures} ${assay} ${assayName} ${margin} ${normalisationMethod} ${demulOutPath} ${fileName} 
   """
 
 }
