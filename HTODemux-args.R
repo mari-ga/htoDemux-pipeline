@@ -113,28 +113,28 @@ print("------------------- Percentage of largest gene --------------------------
 pbmc.hashtag
 
 #------------------Section 5 - Saving results ---------------------------"
-# 
-# create_files <- function(name, path,extension) {
-#   path_complete <- paste(path, name,extension,sep="")
-#   print(path_complete)
-#   if (file.exists(path_complete)) {
-#     print("The file already exists...")
-#     return(-1)
-#   } else {
-#     print("Created new file with results")
-#     file.create(path_complete)
-#     return(path_complete)
-#   }
-# }
+
+create_files <- function(name, path,extension) {
+  path_complete <- paste(path, name,extension,sep="")
+  print(path_complete)
+  if (file.exists(path_complete)) {
+    print("The file already exists...")
+    return(-1)
+  } else {
+    print("Created new file with results")
+    file.create(path_complete)
+    return(path_complete)
+  }
+}
 
 
 #Save Results
-# print(argv$nameOutputFile)
-# print("-------")
-# file_results <-create_files(argv$nameOutputFile, argv$htoDemuxOutPath,".csv")
-# write.csv(pbmc.hashtag$HTO_classification.global, file=file_results)
-# pbmc_file = paste(argv$htoDemuxOutPath,argv$nameOutputFile,".rds",sep="")
-# print(pbmc_file)
-# saveRDS(pbmc.hashtag, file=pbmc_file)
+print(argv$nameOutputFile)
+print("-------")
+file_results <-create_files(argv$nameOutputFile, argv$htoDemuxOutPath,".csv")
+write.csv(pbmc.hashtag$HTO_classification.global, file=file_results)
+pbmc_file = paste(argv$htoDemuxOutPath,argv$nameOutputFile,".rds",sep="")
+print(pbmc_file)
+saveRDS(pbmc.hashtag, file=pbmc_file)
 
 

@@ -56,9 +56,17 @@ process preProcess{
   """
 Rscript $baseDir/pre_processing.R ${umiFile} ${htoFile} ${selectMethod} ${numberFeatures} ${assay} ${assayName} ${margin} ${normalisationMethod} ${demulOutPath} ${fileName}
   """
-
 }
 
+
+process demultiplexing
+{
+  input
+
+
+
+
+}
 
 
 
