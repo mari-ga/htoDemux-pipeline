@@ -2,6 +2,12 @@
 #install.packages("Seurat",repos=("http://cran.rstudio.com"))
 #install.packages("spatstat.sparse",repos=("http://cran.rstudio.com"))
 #install.packages('argparser', repos=("http://cran.rstudio.com"))
+#install.packages("devtools", repos=("http://cran.rstudio.com"))
+#install.packages("BiocManager",repos=("http://cran.rstudio.com"))
+#BiocManager::install("rhdf5")
+#devtools::install_github("AllenInstitute/scrattch.io")
+
+
 #Receive arguments from command line
 options(echo=TRUE)
 
@@ -9,6 +15,8 @@ options(echo=TRUE)
 library(Seurat)
 library(argparser, quietly=TRUE)
 library(ggplot2)
+library(scrattch.io)
+library(rhdf5)
 
 # Create a parser
 p <- arg_parser("Parameters for Seurat object")
@@ -19,6 +27,9 @@ p <- arg_parser("Parameters for Seurat object")
 p <- add_argument(p, "--fileUmi",help="Path to file UMI count matrix")
 p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 
+#Converter for DemuxEM
+p <- add_argument(p, "--converter",help="Transform both input matrices into csv and hdf5 respectively for demuxEM", default = FALSE)
+p <- add_argument(p, "--conversionPath",help="Path to save both converted files", default = NULL)
 #Parameters - section 2
 p <- add_argument(p, "--selectMethod",help="Selection method", default="vst")
 p <- add_argument(p, "--numberFeatures",help="Number of features to be used when finding variable features", type="numeric", default=2000)
@@ -37,8 +48,11 @@ argv <- parse_args(p)
 
 #---------------- Section 1 - Input files -----------------
 pbmc.umis <-readRDS(argv$fileUmi)
-pbmc.htos <- readRDS(argv$fileHto)
+pbmc.htos <-readRDS(argv$fileHto)
 
+# Unchanged original files for conversion purposes
+hto <-readRDS(argv$fileHto)
+umi <-readRDS(argv$fileUmi)
 
 #Identify which UMI corresponds to which hashtag.
 joint.bcs <- intersect(colnames(pbmc.umis), colnames(pbmc.htos))
@@ -67,19 +81,26 @@ pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalizatio
 
 str(pbmc.hashtag)
 
-#------------------Section 5 - Save object for demultiplex ---------------------------"
+#------------------Section 5 - Save object for demultiplex ---------------------------
 
-create_files <- function(name, path,extension) {
+create_files <- function(name, path,extension,converter) {
   path_complete <- paste(path, name,extension,sep="")
   print(path_complete)
-  if (file.exists(path_complete)) {
-    print("The file already exists...")
-    return(-1)
-  } else {
-    print("Created new file with results")
-    file.create(path_complete)
-    return(path_complete)
+  if(isTRUE(converter))
+  {
+    if (file.exists(path_complete)) {
+      print("The file already exists...")
+      return(-1)
+    } else {
+      print("Created new file with results")
+      file.create(path_complete)
+      return(path_complete)
+    }
+  }else{
+    print("We don't need to convert the input files")
   }
+    
+    
 }
 
 
@@ -88,4 +109,24 @@ print(argv$nameOutputFile)
 pbmc_file = paste(argv$demulOutPath,argv$nameOutputFile,".rds",sep="")
 print(pbmc_file)
 saveRDS(pbmc.hashtag, file=pbmc_file)
+
+#-------------- Section 6 - convert files for demuxEM (optional) --------------------------
+
+hto_file = create_files("hto_matrix", argv$conversionPath,".csv",argv$converter)
+if (hto_file != -1){
+  write.csv(hto, file=hto_file) 
+}else{
+  print("It wasn't possible to create csv from HTO matrix")
+}
+
+if (isTRUE(argv$converter)){
+  umi_file = paste(argv$conversionPath,"umi_matrix.h5",sep="")
+  #h5createFile(umi_file)
+  write_dgCMatrix_h5(umi, cols_are = "gene_names", umi_file,
+                     ref_name = "conversion?", gene_ids = NULL)
+}else{
+  print("It wasn't possible to create h5 from umi matrix")
+}
+
+
 

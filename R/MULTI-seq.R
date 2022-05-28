@@ -8,7 +8,6 @@ options(echo=TRUE)
 #Libraries
 library(Seurat)
 library(argparser, quietly=TRUE)
-library(ggplot2)
 
 # Create a parser
 p <- arg_parser("Parameters for MULTI-seq")
