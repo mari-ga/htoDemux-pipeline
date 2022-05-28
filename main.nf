@@ -145,7 +145,12 @@ workflow pre_processing{
 	    preProcess.out
 }
 workflow demul_seurat{
+  def 
 
+    if( params.data )
+        bar(params.data)
+    else
+        bar(foo())
 
 }
 
