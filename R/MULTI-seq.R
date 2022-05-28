@@ -28,7 +28,7 @@ p <- add_argument(p, "--verbose",help="Prints the output", default = TRUE)
 
 #Output paths
 p <- add_argument(p, "--multiSeqOutPath",help="Path to file where the results of MULTI-seq will be saved", default = NULL)
-p <- add_argument(p, "--nameOutputFile",help="Name for the file containing the output of MULTI-Seq object", default = "result.csv")
+p <- add_argument(p, "--nameOutputFileMulti",help="Name for the file containing the output of MULTI-Seq object", default = "result.csv")
 
 argv <- parse_args(p)
 
@@ -36,8 +36,6 @@ argv <- parse_args(p)
 
 pbmc.hashtag <-readRDS(argv$seuratObjectPath)
 str(pbmc.hashtag)
-# Normalize HTO data, here we use centered log-ratio (CLR) transformation
-#pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
 
 
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
@@ -93,10 +91,10 @@ create_files <- function(name, path,extension) {
 
 
 #Save Results
-print(argv$nameOutputFile)
+print(argv$nameOutputFileMulti)
 print("-------")
-file_results <-create_files(argv$nameOutputFile, argv$multiSeqOutPath,".csv")
+file_results <-create_files(argv$nameOutputFileMulti, argv$multiSeqOutPath,".csv")
 write.csv(pbmc.hashtag$MULTI_ID, file=file_results)
-pbmc_file = paste(argv$multiSeqOutPath,argv$nameOutputFile,".rds",sep="")
+pbmc_file = paste(argv$multiSeqOutPath,argv$nameOutputFileMulti,".rds",sep="")
 print(pbmc_file)
 saveRDS(pbmc.hashtag, file=pbmc_file)

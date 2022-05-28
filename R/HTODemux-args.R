@@ -26,7 +26,7 @@ p <- add_argument(p, "--nsamples",help="number of samples for demultiplex", type
 
 #Output paths
 p <- add_argument(p, "--htoDemuxOutPath",help="Path to file where the results of htoDemux will be saved", default = NULL)
-p <- add_argument(p, "--nameOutputFile",help="Name for the file containing the output of HTODemux object", default = "result.csv")
+p <- add_argument(p, "--nameOutputFileHTO",help="Name for the file containing the output of HTODemux object", default = "result.csv")
 
 
 argv <- parse_args(p)
@@ -129,11 +129,11 @@ create_files <- function(name, path,extension) {
 
 
 #Save Results
-print(argv$nameOutputFile)
+print(argv$nameOutputFileHTO)
 print("-------")
-file_results <-create_files(argv$nameOutputFile, argv$htoDemuxOutPath,".csv")
+file_results <-create_files(argv$nameOutputFileHTO, argv$htoDemuxOutPath,".csv")
 write.csv(pbmc.hashtag$HTO_classification.global, file=file_results)
-pbmc_file = paste(argv$htoDemuxOutPath,argv$nameOutputFile,".rds",sep="")
+pbmc_file = paste(argv$htoDemuxOutPath,argv$nameOutputFileHTO,".rds",sep="")
 print(pbmc_file)
 saveRDS(pbmc.hashtag, file=pbmc_file)
 
