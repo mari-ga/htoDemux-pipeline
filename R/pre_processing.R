@@ -3,10 +3,8 @@
 #install.packages("spatstat.sparse",repos=("http://cran.rstudio.com"))
 #install.packages('argparser', repos=("http://cran.rstudio.com"))
 #install.packages("devtools", repos=("http://cran.rstudio.com"))
-#install.packages("BiocManager",repos=("http://cran.rstudio.com"))
-#BiocManager::install("rhdf5")
-#devtools::install_github("AllenInstitute/scrattch.io")
-
+install.packages("data.table", repos=("http://cran.rstudio.com"))
+devtools::install_github('JiekaiLab/RIOH5@HEAD')
 
 #Receive arguments from command line
 options(echo=TRUE)
@@ -14,9 +12,8 @@ options(echo=TRUE)
 #Libraries
 library(Seurat)
 library(argparser, quietly=TRUE)
-library(ggplot2)
-library(scrattch.io)
-library(rhdf5)
+
+
 
 # Create a parser
 p <- arg_parser("Parameters for Seurat object")
@@ -114,16 +111,16 @@ saveRDS(pbmc.hashtag, file=pbmc_file)
 
 hto_file = create_files("hto_matrix", argv$conversionPath,".csv",argv$converter)
 if (hto_file != -1){
-  write.csv(hto, file=hto_file) 
+  data_to_write_out <- as.data.frame(as.matrix(hto))
+  fwrite(x = data_to_write_out, row.names = TRUE, file =hto_file )
+  
 }else{
   print("It wasn't possible to create csv from HTO matrix")
 }
 
 if (isTRUE(argv$converter)){
   umi_file = paste(argv$conversionPath,"umi_matrix.h5",sep="")
-  #h5createFile(umi_file)
-  write_dgCMatrix_h5(umi, cols_are = "gene_names", umi_file,
-                     ref_name = "conversion?", gene_ids = NULL)
+  seurat_write_h5(seurat = umi,file = umi_file, assay.name = NULL,save.graphs = FALSE)
 }else{
   print("It wasn't possible to create h5 from umi matrix")
 }
