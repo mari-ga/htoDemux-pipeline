@@ -145,7 +145,6 @@ workflow pre_processing{
 
 
 workflow demul_seurat{
-  def object from seurat_demul
   main:
     if( params.mode )
         demultiplexing(object)
@@ -153,16 +152,12 @@ workflow demul_seurat{
       print("Nothing to do here")
   emit:
     demul_seurat.out
-    
-        
-
 }
 
 
 
 //Main workflow
 workflow{
-   take:
     def umi = Channel.fromPath(params.umi_count)
     def hto_matrix =  Channel.fromPath(params.hto_mat)
   main:
