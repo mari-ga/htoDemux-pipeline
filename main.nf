@@ -129,8 +129,6 @@ process demultiplexing
 
     else
           error "Invalid alignment mode: ${mode}"
-  
-
 
 }
 
@@ -144,13 +142,19 @@ workflow pre_processing{
   emit:
 	    preProcess.out
 }
-workflow demul_seurat{
-  def 
 
-    if( params.data )
-        bar(params.data)
+
+workflow demul_seurat{
+  def object from seurat_demul
+  main:
+    if( params.mode )
+        demultiplexing(object)
     else
-        bar(foo())
+      print("Nothing to do here")
+  emit:
+    demul_seurat.out
+    
+        
 
 }
 
@@ -163,6 +167,7 @@ workflow{
     def hto_matrix =  Channel.fromPath(params.hto_mat)
   main:
     pre_processing(umi,hto_matrix)
+    demul_seurat(pre_processing.out)
 
 }
 
