@@ -3,8 +3,8 @@
 #install.packages("spatstat.sparse",repos=("http://cran.rstudio.com"))
 #install.packages('argparser', repos=("http://cran.rstudio.com"))
 #install.packages("devtools", repos=("http://cran.rstudio.com"))
-install.packages("data.table", repos=("http://cran.rstudio.com"))
-devtools::install_github('JiekaiLab/RIOH5@HEAD')
+#install.packages("data.table", repos=("http://cran.rstudio.com"))
+#devtools::install_github('JiekaiLab/RIOH5@HEAD')
 
 #Receive arguments from command line
 options(echo=TRUE)
@@ -109,21 +109,21 @@ saveRDS(pbmc.hashtag, file=pbmc_file)
 
 #-------------- Section 6 - convert files for demuxEM (optional) --------------------------
 
-hto_file = create_files("hto_matrix", argv$conversionPath,".csv",argv$converter)
-if (hto_file != -1){
-  data_to_write_out <- as.data.frame(as.matrix(hto))
-  fwrite(x = data_to_write_out, row.names = TRUE, file =hto_file )
+# hto_file = create_files("hto_matrix", argv$conversionPath,".csv",argv$converter)
+# if (hto_file != -1){
+#   data_to_write_out <- as.data.frame(as.matrix(hto))
+#   fwrite(x = data_to_write_out, row.names = TRUE, file =hto_file )
   
-}else{
-  print("It wasn't possible to create csv from HTO matrix")
-}
+# }else{
+#   print("It wasn't possible to create csv from HTO matrix")
+# }
 
-if (isTRUE(argv$converter)){
-  umi_file = paste(argv$conversionPath,"umi_matrix.h5",sep="")
-  seurat_write_h5(seurat = umi,file = umi_file, assay.name = NULL,save.graphs = FALSE)
-}else{
-  print("It wasn't possible to create h5 from umi matrix")
-}
+# if (isTRUE(argv$converter)){
+#   umi_file = paste(argv$conversionPath,"umi_matrix.h5",sep="")
+#   seurat_write_h5(seurat = umi,file = umi_file, assay.name = NULL,save.graphs = FALSE)
+# }else{
+#   print("It wasn't possible to create h5 from umi matrix")
+# }
 
 
 

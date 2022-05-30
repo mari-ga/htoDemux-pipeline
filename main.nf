@@ -67,8 +67,8 @@ process preProcess{
 
 process htoDemux{
   input:
-    path object
-    val quantile
+    path object_seurat
+    val quantile_hto
     //For HTODemux
     val kfunc
     val nstarts
@@ -82,8 +82,8 @@ process htoDemux{
   
   script:
   //Parameters in common amongst both algoriths
-    def objectFile = "--seuratObjectPath $object"
-    def quantile = "--quantile $quantile"
+    def objectFile_hto = "--seuratObjectPath $object_seurat"
+    def quantile_hto = "--quantile $quantile_hto"
     
     def kfunc = "--kfunc  $kfunc"
     def nstarts = "--nstarts $nstarts"
@@ -93,13 +93,13 @@ process htoDemux{
     
     """
       echo 'Running HTODemux'
-      Rscript $baseDir/R/HTODemux-args.R ${objectFile} ${quantile} ${nstarts} ${nsamples} ${htoOutpath} ${nameFileHTO}
+      Rscript $baseDir/R/HTODemux-args.R ${objectFile_hto} ${quantile_hto} ${nstarts} ${nsamples} ${htoOutpath} ${nameFileHTO}
     """
 }
 
 process multiSeq{
-  path object
-  val quantile
+  path object_multi
+  val quantile_multi
   //For Multi-seq
   val autoThresh
   val maxiter
@@ -110,8 +110,8 @@ process multiSeq{
   val multiSeqOutPath
   val nameOutputFileMulti
 
-  def objectFile = "--seuratObjectPath $object"
-  def quantile = "--quantile $quantile"
+  def objectFile_multi = "--seuratObjectPath $object_multi"
+  def quantile_multi = "--quantile $quantile"
   def objectFile = "--seuratObjectPath $object"
   def quantile = "--quantile $quantile"
   def autoThresh = "--autoThresh $autoThresh"
@@ -131,7 +131,7 @@ process multiSeq{
   script:
   """
     echo 'Running MULTI-seq'
-    Rscript $baseDir/R/MULTI-seq.R ${objectFile} ${quantile} ${autoThresh} ${maxiter} ${qrangeFrom} ${qrangeTo} ${qrangeBy} ${verbose} ${multiSeqOutPath} ${nameOutputFileMulti}
+    Rscript $baseDir/R/MULTI-seq.R ${objectFile_multi} ${quantile_multi} ${autoThresh} ${maxiter} ${qrangeFrom} ${qrangeTo} ${qrangeBy} ${verbose} ${multiSeqOutPath} ${nameOutputFileMulti}
   """
 
 }
@@ -145,13 +145,13 @@ workflow pre_processing{
   main:
     preProcess(umi,hto_matrix,params.selection_method, params.number_features, params.assay, params.assayName, params.margin, params.normalisation_method, params.demulOutPath, params.nameOutputFile)
   emit:
-	    output_object = preProcess.out
+	  output_object = preProcess.out
 }
 
 
 workflow demul_htoDemux{
   main:
-      htoDemux(pre_processing.out.output_object,params.quantile, params.kfunc, params.nstarts, params.nsamples, params.htoOutpath, params.nameFileHTO)
+      htoDemux(pre_processing.out.output_object,params.quantile_hto, params.kfunc, params.nstarts, params.nsamples, params.htoOutpath, params.nameFileHTO)
   emit:
     htoDemux_out_rds = htoDemux.out[0]
     htoDemux_out_csv = htoDemux.out[1]
@@ -160,7 +160,7 @@ workflow demul_htoDemux{
 
 workflow demul_multiSeq{
   main:
-      multiSeq(pre_processing.out.output_object, params.quantile, params.autoThresh, params.maxiter, params.qrangeFrom, params.qrangeTo, params.qrangeBy, params.verbose, params.multiSeqOutPath, params.nameOutputFileMulti)
+      multiSeq(pre_processing.out.output_object, params.quantile_multi, params.autoThresh, params.maxiter, params.qrangeFrom, params.qrangeTo, params.qrangeBy, params.verbose, params.multiSeqOutPath, params.nameOutputFileMulti)
   emit:
     multiSeq_out_rds = multiSeq.out[0]
     multiSeq_out_csv = multiSeq.out[1]
@@ -170,13 +170,14 @@ workflow demul_multiSeq{
 
 //Main workflow
 workflow{
-
+  
   main:
     pre_processing()
+    demul_htoDemux()
     //if mode on -> cual (ifs anidados)
-    if ()
+   // if ()
 
-    else()
+   // else()
 
 }
 
