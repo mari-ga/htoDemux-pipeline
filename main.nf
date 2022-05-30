@@ -2,6 +2,7 @@
 nextflow.enable.dsl=2
 /*
  * Input: 
+    Files for Pre Processing:
     --umi-matrix.rds <path>
     --hashtag-counts-matrix.rds <path>
     Parameters for Pre-processing (Seurat object creation):
@@ -13,6 +14,11 @@ nextflow.enable.dsl=2
     --assayName
     --demulOutPath
     --nameOutputFile
+    Files for Seurat Demultiplexing:
+    --seuratObjectPath (output from pre processing)
+
+
+
     
     
 */
@@ -39,7 +45,7 @@ process preProcess{
     val nameOutputFile
 
   output:
-    path 'object' into seurat_demul
+    path 'object', emit: preprocess_object
   
   script:
   def umiFile = "--fileUmi $umi_counts"
@@ -59,11 +65,9 @@ process preProcess{
 }
 
 
-process demultiplexing
-{
+process htoDemux{
   input:
-    path 'object' from seurat_demul
-    val mode 
+    path object
     val quantile
     //For HTODemux
     val kfunc
@@ -72,19 +76,9 @@ process demultiplexing
     val htoDemuxOutPath
     val nameOutputFileHTO
 
-    //For Multi-seq
-    val autoThresh
-    val maxiter
-    val qrangeFrom
-    val qrangeTo
-    val qrangeBy
-    val verbose
-    val multiSeqOutPath
-    val nameOutputFileMulti
-
   output:
-    path 'rds_result'
-    path 'csv_result'
+    path 'rds_result_hto'
+    path 'csv_result_hto'
   
   script:
   //Parameters in common amongst both algoriths
@@ -97,40 +91,51 @@ process demultiplexing
     def htoOutpath = "--htoDemuxOutPath $htoDemuxOutPath"
     def nameFileHTO = "--nameOutputFileHTO $nameOutputFileHTO "
     
-    def autoThresh = "--autoThresh $autoThresh"
-    def maxiter = "--maxiter $maxiter"
-    def qrangeFrom = "--qrangeFrom $qrangeFrom"
-    def qrangeTo = "--qrangeTo $qrangeTo"
-    def qrangeBy = "--qrangeBy $qrangeBy"
-    def verbose = "--verbose $verbose"
-    def multiSeqOutPath = "--multiSeqOutPath $multiSeqOutPath"
-    def nameOutputFileMulti = "--nameOutputFileMulti $nameOutputFileMulti"
+    """
+      echo 'Running HTODemux'
+      Rscript $baseDir/R/HTODemux-args.R ${objectFile} ${quantile} ${nstarts} ${nsamples} ${htoOutpath} ${nameFileHTO}
+    """
+}
+
+process multiSeq{
+  path object
+  val quantile
+  //For Multi-seq
+  val autoThresh
+  val maxiter
+  val qrangeFrom
+  val qrangeTo
+  val qrangeBy
+  val verbose
+  val multiSeqOutPath
+  val nameOutputFileMulti
+
+  def objectFile = "--seuratObjectPath $object"
+  def quantile = "--quantile $quantile"
+  def objectFile = "--seuratObjectPath $object"
+  def quantile = "--quantile $quantile"
+  def autoThresh = "--autoThresh $autoThresh"
+  def maxiter = "--maxiter $maxiter"
+  def qrangeFrom = "--qrangeFrom $qrangeFrom"
+  def qrangeTo = "--qrangeTo $qrangeTo"
+  def qrangeBy = "--qrangeBy $qrangeBy"
+  def verbose = "--verbose $verbose"
+  def multiSeqOutPath = "--multiSeqOutPath $multiSeqOutPath"
+  def nameOutputFileMulti = "--nameOutputFileMulti $nameOutputFileMulti"
 
 
-    if(mode == "htodemux")
-      """
-        echo 'Running HTODemux'
-        Rscript $baseDir/R/HTODemux-args.R ${objectFile} ${quantile} ${nstarts} ${nsamples} ${htoOutpath} ${nameFileHTO}
-      """
+  output:
+    path 'rds_result_multi'
+    path 'csv_result_multi'
 
-    else if(mode == "multiseq")
-      """
-        echo 'Running MULTI-seq'
-        Rscript $baseDir/R/MULTI-seq.R ${objectFile} ${quantile} ${autoThresh} ${maxiter} ${qrangeFrom} ${qrangeTo} ${qrangeBy} ${verbose} ${multiSeqOutPath} ${nameOutputFileMulti}
-      """
-
-    else if(mode == "both")
-      """
-        echo 'Running HTODemux'
-        Rscript $baseDir/R/HTODemux-args.R ${objectFile} ${quantile} ${nstarts} ${nsamples} ${htoOutpath} ${nameFileHTO}
-        echo 'Running MULTI-seq'
-        Rscript $baseDir/R/MULTI-seq.R ${objectFile} ${quantile} ${autoThresh} ${maxiter} ${qrangeFrom} ${qrangeTo} ${qrangeBy} ${verbose} ${multiSeqOutPath} ${nameOutputFileMulti}
-      """
-
-    else
-          error "Invalid alignment mode: ${mode}"
+  script:
+  """
+    echo 'Running MULTI-seq'
+    Rscript $baseDir/R/MULTI-seq.R ${objectFile} ${quantile} ${autoThresh} ${maxiter} ${qrangeFrom} ${qrangeTo} ${qrangeBy} ${verbose} ${multiSeqOutPath} ${nameOutputFileMulti}
+  """
 
 }
+
 
 
 //Subworkflows
@@ -140,29 +145,38 @@ workflow pre_processing{
   main:
     preProcess(umi,hto_matrix,params.selection_method, params.number_features, params.assay, params.assayName, params.margin, params.normalisation_method, params.demulOutPath, params.nameOutputFile)
   emit:
-	    preProcess.out
+	    output_object = preProcess.out
 }
 
 
-workflow demul_seurat{
+workflow demul_htoDemux{
   main:
-    if( params.mode )
-        demultiplexing(object)
-    else
-      print("Nothing to do here")
+      htoDemux(pre_processing.out.output_object,params.quantile, params.kfunc, params.nstarts, params.nsamples, params.htoOutpath, params.nameFileHTO)
   emit:
-    demul_seurat.out
+    htoDemux_out_rds = htoDemux.out[0]
+    htoDemux_out_csv = htoDemux.out[1]
+
+}
+
+workflow demul_multiSeq{
+  main:
+      multiSeq(pre_processing.out.output_object, params.quantile, params.autoThresh, params.maxiter, params.qrangeFrom, params.qrangeTo, params.qrangeBy, params.verbose, params.multiSeqOutPath, params.nameOutputFileMulti)
+  emit:
+    multiSeq_out_rds = multiSeq.out[0]
+    multiSeq_out_csv = multiSeq.out[1]
 }
 
 
 
 //Main workflow
 workflow{
-    def umi = Channel.fromPath(params.umi_count)
-    def hto_matrix =  Channel.fromPath(params.hto_mat)
+
   main:
-    pre_processing(umi,hto_matrix)
-    demul_seurat(pre_processing.out)
+    pre_processing()
+    //if mode on -> cual (ifs anidados)
+    if ()
+
+    else()
 
 }
 

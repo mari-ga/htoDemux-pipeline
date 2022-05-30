@@ -18,6 +18,11 @@ p <- arg_parser("Parameters for Seurat object")
 p <- add_argument(p, "--fileUmi",help="Path to file UMI count matrix")
 p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 
+
+#Output paths
+p <- add_argument(p, "--hashedDropsPath",help="Path to file where the results of Hashed Drops will be saved", default = NULL)
+p <- add_argument(p, "--nameOutputFileDrops",help="Name for the file containing the output of Hashed Drop object", default = "result.csv")
+
 argv <- parse_args(p)
 
 
@@ -35,4 +40,34 @@ pbmc.htos <- as.matrix(pbmc.htos[, joint.bcs])
 # Confirm that the HTO have the correct names
 rownames(pbmc.htos)
 
-hashedDrops(pbmc.htos,  ambient = NULL,min.prop = 0.05,constant.ambient = FALSE,)
+#---------------- Section 2 - Demultiplexing -----------------
+hashed <- hashedDrops(pbmc.htos,  ambient = NULL,min.prop = 0.05,constant.ambient = FALSE,)
+#hashed <- hashedDrops(pbmc.umis,  ambient = NULL,min.prop = 0.05,constant.ambient = FALSE,)
+str(hashed)
+
+print("------------------")
+typeof(hashed)
+
+print("------------------")
+str(pbmc.htos)
+
+
+
+#------------------Section 3 - Saving results ---------------------------"
+
+create_files <- function(name, path,extension) {
+  path_complete <- paste(path, name,extension,sep="")
+  print(path_complete)
+  if (file.exists(path_complete)) {
+    print("The file already exists...")
+    return(-1)
+  } else {
+    print("Created new file with results")
+    file.create(path_complete)
+    return(path_complete)
+  }
+}
+
+file_results <-create_files(argv$nameOutputFileDrops, argv$hashedDropsPath,".csv")
+write.csv(hashed, file=file_results)
+
