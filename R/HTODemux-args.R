@@ -39,13 +39,13 @@ str(pbmc.hashtag)
 
 print("------------------- Percentage of largest gene ----------------------------")
 
-apply(
-  pbmc.hashtag@assays$RNA@counts,
-  2,
-  function(x)(100*max(x))/sum(x)
-) -> pbmc.hashtag$Percent.Largest.Gene
-
-head(pbmc.hashtag$Percent.Largest.Gene)
+# apply(
+#   pbmc.hashtag@assays$RNA@counts,
+#   2,
+#   function(x)(100*max(x))/sum(x)
+# ) -> pbmc.hashtag$Percent.Largest.Gene
+# 
+# head(pbmc.hashtag$Percent.Largest.Gene)
 
 
 # print("---------------------Amount of MT genes--------------------------")
@@ -56,7 +56,7 @@ head(pbmc.hashtag$Percent.Largest.Gene)
 # 
 # head(data$percent.MT)
 
-head(x = pbmc.hashtag[[c("nFeatureRNA","HTO_classification")]])
+#head(x = pbmc.hashtag[[c("nFeatureRNA","HTO_classification")]])
 
 
 #------------------ Section 3 - adding HTO data as an independent assay ---------------------
@@ -67,8 +67,9 @@ head(x = pbmc.hashtag[[c("nFeatureRNA","HTO_classification")]])
 
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
 
+print(argv$kfunc)
 pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile,  nstarts = argv$nstarts, nsamples = argv$nsamples)
-
+#pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = "HTO", positive.quantile = 0.99)
 
 # Global classification results
 table(pbmc.hashtag$HTO_classification.global)
@@ -105,8 +106,8 @@ colnames(x = pbmc.hashtag[[]])
 
 
 
-seurat_output <- capture.output(HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile,  nstarts = argv$nstarts, nsamples = argv$nsamples)) 
-seurat_output
+#seurat_output <- capture.output(HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile,  nstarts = argv$nstarts, nsamples = argv$nsamples)) 
+#seurat_output
 
 
 print("------------------- Percentage of largest gene ----------------------------")

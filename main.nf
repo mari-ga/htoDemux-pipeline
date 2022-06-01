@@ -45,7 +45,7 @@ process preProcess{
     val nameOutputFile
 
   output:
-    path 'object', emit: preprocess_object
+    path 'object.rds', emit: preprocess_object
   
   script:
   def umiFile = "--fileUmi $umi_counts"
@@ -61,6 +61,8 @@ process preProcess{
 
   """
   Rscript $baseDir/R/pre_processing.R ${umiFile} ${htoFile} ${selectMethod} ${numberFeatures} ${assay} ${assayName} ${margin} ${normalisationMethod} ${demulOutPath} ${fileName}
+
+   echo $demulOutPath > object.rds
   """
 }
 
@@ -76,6 +78,7 @@ process htoDemux{
     val htoDemuxOutPath
     val nameOutputFileHTO
 
+    out_pre each  path(preprocess_object)
   output:
     path 'rds_result_hto'
     path 'csv_result_hto'
@@ -93,7 +96,7 @@ process htoDemux{
     
     """
       echo 'Running HTODemux'
-      Rscript $baseDir/R/HTODemux-args.R ${objectFile_hto} ${quantile_hto} ${nstarts} ${nsamples} ${htoOutpath} ${nameFileHTO}
+      Rscript $baseDir/R/HTODemux-args.R ${preprocess_object} ${quantile_hto} ${nstarts} ${nsamples} ${htoOutpath} ${nameFileHTO}
     """
 }
 
@@ -140,16 +143,17 @@ process multiSeq{
 
 //Subworkflows
 workflow pre_processing{
-    def umi = Channel.fromPath(params.umi_count)
-    def hto_matrix =  Channel.fromPath(params.hto_mat)
+    def umi = Channel.fromPath(params.umi_count, checkIfExists: true )
+    def hto_matrix =  Channel.fromPath(params.hto_mat, checkIfExists: true )
   main:
     preProcess(umi,hto_matrix,params.selection_method, params.number_features, params.assay, params.assayName, params.margin, params.normalisation_method, params.demulOutPath, params.nameOutputFile)
   emit:
-	  output_object = preProcess.out
+	  output_object = preProcess.out.view({ "Created: $it" })
 }
 
 
 workflow demul_htoDemux{
+ 
   main:
       htoDemux(pre_processing.out.output_object,params.quantile_hto, params.kfunc, params.nstarts, params.nsamples, params.htoOutpath, params.nameFileHTO)
   emit:
@@ -170,10 +174,11 @@ workflow demul_multiSeq{
 
 //Main workflow
 workflow{
-  
+  take:
+
   main:
-    pre_processing()
-    demul_htoDemux()
+    out_pre = pre_processing()
+    demul_htoDemux(out_pre)
     //if mode on -> cual (ifs anidados)
    // if ()
 

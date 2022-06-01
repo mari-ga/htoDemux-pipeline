@@ -40,6 +40,7 @@ str(pbmc.hashtag)
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
 
 pbmc.hashtag <- MULTIseqDemux(pbmc.hashtag, assay = argv$assayName,  quantile = args$quantile, autoThresh = TRUE , qrange=seq(from = argv$qrangeFrom, to =argv$qrangeTo, by=argv$qrangeBy), verbose=argv$verbose)
+#pbmc.hashtag <- MULTIseqDemux(pbmc.hashtag,assay = "HTO",quantile = 0.7, autoThresh = FALSE,maxiter = 5,qrange = seq(from = 0.1, to = 0.9, by = 0.05),verbose = TRUE)
 
 
 table(pbmc.hashtag$MULTI_ID)

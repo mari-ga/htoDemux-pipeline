@@ -4,7 +4,7 @@
 #install.packages('argparser', repos=("http://cran.rstudio.com"))
 #install.packages("devtools", repos=("http://cran.rstudio.com"))
 #install.packages("data.table", repos=("http://cran.rstudio.com"))
-#devtools::install_github('JiekaiLab/RIOH5@HEAD')
+
 
 #Receive arguments from command line
 options(echo=TRUE)
@@ -67,16 +67,12 @@ rownames(pbmc.htos)
 # Setup Seurat object
 pbmc.hashtag <- CreateSeuratObject(counts = pbmc.umis)
 
-str(pbmc.hashtag)
-
-
 #------------------ Section 3 - adding HTO data as an independent assay ---------------------
 # Add HTO data as a new assay independent from RNA
 pbmc.hashtag[[argv$assayName]] <- CreateAssayObject(counts = pbmc.htos)
 # Normalize HTO data
 pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
 
-str(pbmc.hashtag)
 
 #------------------Section 5 - Save object for demultiplex ---------------------------
 
@@ -96,16 +92,13 @@ create_files <- function(name, path,extension,converter) {
   }else{
     print("We don't need to convert the input files")
   }
-    
-    
 }
 
 
 #Save Results
-print(argv$nameOutputFile)
 pbmc_file = paste(argv$demulOutPath,argv$nameOutputFile,".rds",sep="")
-print(pbmc_file)
 saveRDS(pbmc.hashtag, file=pbmc_file)
+print(pbmc_file)
 
 #-------------- Section 6 - convert files for demuxEM (optional) --------------------------
 
