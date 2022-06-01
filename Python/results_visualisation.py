@@ -43,8 +43,19 @@ def htoDemul_visual(results):
 
 #This one gets a variable number of dicts from the algorithms used in the workflow
 def create_df(*args):
-    df = defaultdict(list)
-    for d in (htoDemul_dict, multiseq_dict): # you can list as many input dicts as you want here
+    res_dict = defaultdict(list)
+    for d in (args): # you can list as many input dicts as you want here
         for key, value in d.items():
-            dd[key].append(value)
+            res_dict[key].append(value)
+    return res_dict
+
+
+def visualise(res_dict):
+    df = pd.DataFrame(dict(res_dict))
+    num_algorithms = len(res_dict)
+    plot = dfObj.plot.bar(x='Algorithm', stacked=True,color=["#DA4167","#E2B1B1","#258EA6"], title='Hashing Demultiplexing by algorithm',figsize=(15, 10))
+    fig = plot.get_figure()
+    fig.savefig("Stacked_plot.png")
+
+
 
