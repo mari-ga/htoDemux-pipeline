@@ -29,9 +29,13 @@ log.info """\
 
  UMI-Counts: ${params.umi_count}
  HTO-Matrix: ${params.hto_mat}
+ Intermediate object name: ${params.nameOutputFile}
+ Intermediate object path: ${params.demulOutPath}
+ Results: ${params.outdir}
  """
 
 process preProcess{
+  publishDir path: "$params.outdir"
   input:
     path umi_counts
     path hto_matrix
@@ -59,10 +63,10 @@ process preProcess{
   def demulOutPath = "--demulOutPath $demulOutPath"
   def fileName = " --nameOutputFile $nameOutputFile"
 
-  """
-  Rscript $baseDir/R/pre_processing.R ${umiFile} ${htoFile} ${selectMethod} ${numberFeatures} ${assay} ${assayName} ${margin} ${normalisationMethod} ${demulOutPath} ${fileName}
 
-   echo $demulOutPath > object.rds
+  """
+  Rscript $baseDir/R/pre_processing.R ${umiFile} ${htoFile} ${selectMethod} ${numberFeatures} ${assay} ${assayName} ${margin} ${normalisationMethod} ${demulOutPath} ${fileName} > object.rds
+  
   """
 }
 
@@ -153,7 +157,8 @@ workflow pre_processing{
 
 
 workflow demul_htoDemux{
- 
+ take: 
+  
   main:
       htoDemux(pre_processing.out.output_object,params.quantile_hto, params.kfunc, params.nstarts, params.nsamples, params.htoOutpath, params.nameFileHTO)
   emit:
@@ -178,6 +183,7 @@ workflow{
 
   main:
     out_pre = pre_processing()
+    pre_processing.out.view({ "Received: $it" })
     demul_htoDemux(out_pre)
     //if mode on -> cual (ifs anidados)
    // if ()
