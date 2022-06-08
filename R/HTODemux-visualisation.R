@@ -26,6 +26,9 @@ p <- add_argument(p, "--vlnLog",help="plot the feature axis on log scale", defau
 p <- add_argument(p, "--tsne",help="Generate a two dimensional tSNE embedding for HTOs", default = FALSE)
 p <- add_argument(p, "--tseIdents",help="What should we remove from the object (we have Singlet,Doublet and Negative)", default = "Negative")
 p <- add_argument(p, "--tsneInvert",help="True or False", default = TRUE)
+p <- add_argument(p, "--tsneVerbose",help="True or False", default = FALSE)
+p <- add_argument(p, "--tsneApprox",help="True or False", default = FALSE)
+p <- add_argument(p, "--tsneDimMax",help="max -> number of donors ",type="numeric", default=1)
 p <- add_argument(p, "--tsePerplexity",help="value for perplexity", type="numeric",  default = 100)
 
 #Output graphs - Heatmap
@@ -48,7 +51,6 @@ print(argv$pbcmHashtagPath)
 #"/Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/nextflow-files/htoDemux-pipeline/results/results.rds"
 pbmc.hashtag <-readRDS(argv$pbcmHashtagPath)
 
-str(pbmc.hashtag)
 
 graphsPath <- argv$graphs
 # Ridge Plot
@@ -79,14 +81,14 @@ if(argv$vlnplot){
 
 
 if(argv$tsne){
-  # First, we will remove negative cells from the object
-  pbmc.hashtag.subset <- subset(pbmc.hashtag, idents = "Negative", invert = TRUE)
-  
-  # Calculate a distance matrix using HTO
-  hto.dist.mtx <- as.matrix(dist(t(GetAssayData(object = pbmc.hashtag.subset, assay = "HTO"))))
-  
-  # Calculate tSNE embeddings with a distance matrix
-  pbmc.hashtag.subset <- RunTSNE(pbmc.hashtag.subset, distance.matrix = hto.dist.mtx, perplexity = 100)
+  # remove negative cells from the object
+  pbmc.hashtag.subset <- subset(pbmc.hashtag, idents = argv$tseIdents, invert = argv$tsneInvert)
+  # Calculate a tSNE embedding of the HTO data
+  DefaultAssay(pbmc.hashtag.subset) <- argv$assayName
+  pbmc.hashtag.subset <- ScaleData(pbmc.hashtag.subset, features = rownames(pbmc.hashtag.subset),
+                                   verbose = FALSE)
+  pbmc.hashtag.subset <- RunPCA(pbmc.hashtag.subset, features = rownames(pbmc.hashtag.subset), approx = argv$tsneApprox)
+  pbmc.hashtag.subset <- RunTSNE(pbmc.hashtag.subset, dims = 1:argv$tsneDimMax, perplexity = argv$tsePerplexity)
   plot4<-DimPlot(pbmc.hashtag.subset)
   png(paste(graphsPath,"tSNE.png",sep=""))
   print(plot4)
@@ -102,21 +104,28 @@ if(argv$heatmap){
 }
 
 if(argv$cluster){
+  # pbmc.hashtag.subset <- subset(pbmc.hashtag, idents = argv$tseIdents, invert = argv$tsneInvert)
+  # DefaultAssay(pbmc.hashtag.subset) <- argv$assayName
+  # pbmc.hashtag.subset <- ScaleData(pbmc.hashtag.subset, features = rownames(pbmc.hashtag.subset),
+  #                                  verbose = FALSE)
+  # pbmc.hashtag.subset <- RunPCA(pbmc.hashtag.subset, features = rownames(pbmc.hashtag.subset), approx = argv$tsneApprox)
+  # pbmc.hashtag.subset <- RunTSNE(pbmc.hashtag.subset, dims = 1:argv$tsneDimMax, perplexity = argv$tsePerplexity)
+  str(pbmc.hashtag)
   pbmc.singlet <- subset(pbmc.hashtag, idents = "Singlet")
-  pbmc.singlet <- FindVariableFeatures(pbmc.singlet, selection.method = argv$clusterSelMethod )
-  pbmc.singlet <- ScaleData(pbmc.singlet, features = VariableFeatures(pbmc.singlet))
-  pbmc.singlet <- RunPCA(pbmc.singlet, features = VariableFeatures(pbmc.singlet))
-  
-  pbmc.singlet <- FindNeighbors(pbmc.singlet, reduction = argv$reductionMethod, dims = 1:argv$reductionDims)
-  pbmc.singlet <- FindClusters(pbmc.singlet, resolution = argv$reductionResol)
-  
-  pbmc.singlet <- RunTSNE(pbmc.singlet, reduction = argv$reductionMethod, dims = 1:argv$reductionDims)
-  if(argv$dimPlot){
-    plot6 <-DimPlot(pbmc.singlet, group.by = "HTO_classification")
-    png(paste(graphsPath,"dimPlot.png",sep=""))
-    print(plot6)
-    dev.off()
-  }
+  # pbmc.singlet <- FindVariableFeatures(pbmc.singlet, selection.method = "mean.var.plot")
+  # pbmc.singlet <- ScaleData(pbmc.singlet, features = VariableFeatures(pbmc.singlet))
+  # pbmc.singlet <- RunPCA(pbmc.singlet, features = VariableFeatures(pbmc.singlet))
+  # 
+  # pbmc.singlet <- FindNeighbors(pbmc.singlet, reduction = "pca", dims = 1:10)
+  # pbmc.singlet <- FindClusters(pbmc.singlet, resolution = 0.6, verbose = FALSE)
+  # pbmc.singlet <- RunTSNE(pbmc.singlet, reduction = "pca", dims = 1:10)
+  # 
+  # if(argv$dimPlot){
+  #   plot6 <- DimPlot(pbmc.singlet, group.by = "HTO_classification")
+  #   png(paste(graphsPath,"dimPlot.png",sep=""))
+  #   print(plot6)
+  #   dev.off()
+  # }
   
   
 }

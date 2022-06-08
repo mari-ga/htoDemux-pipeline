@@ -20,7 +20,7 @@ p <- add_argument(p, "--seuratObjectPath",help="seurat object ready for demultip
 
 #parameters - section 4
 p <- add_argument(p, "--quantile",help="Positive quantile per default: 0.99", type="numeric",default=0.99)
-p <- add_argument(p, "--kfunc",help="Cluster function choose between: Clara - kmeans",default="clara")
+p <- add_argument(p, "--kfunc",help="Cluster function choose between: Clara - kmeans",default=NULL)
 p <- add_argument(p, "--nstarts",help="number of starts for demultiplex", type="numeric",default=100)
 p <- add_argument(p, "--nsamples",help="number of samples for demultiplex", type="numeric",default=100)
 

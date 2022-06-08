@@ -32,10 +32,11 @@ log.info """\
  Intermediate object name: ${params.nameOutputFile}
  Intermediate object path: ${params.demulOutPath}
  Results: ${params.outdir}
+ HTOOut: ${params.htoDemuxOutPath}
  """
 
 process preProcess{
-  publishDir path: "$params.outdir"
+  
   input:
     path umi_counts
     path hto_matrix
@@ -49,7 +50,7 @@ process preProcess{
     val nameOutputFile
 
   output:
-    path 'object.rds', emit: preprocess_object
+    path 'object.rds'  
   
   script:
   def umiFile = "--fileUmi $umi_counts"
@@ -72,8 +73,9 @@ process preProcess{
 
 
 process htoDemux{
+  publishDir path: "$params.outdir"
   input:
-    path object_seurat
+    path preprocess_object
     val quantile_hto
     //For HTODemux
     val kfunc
@@ -81,15 +83,14 @@ process htoDemux{
     val nsamples
     val htoDemuxOutPath
     val nameOutputFileHTO
+    
 
-    out_pre each  path(preprocess_object)
   output:
     path 'rds_result_hto'
     path 'csv_result_hto'
   
   script:
-  //Parameters in common amongst both algoriths
-    def objectFile_hto = "--seuratObjectPath $object_seurat"
+    def objectFile_hto = "--seuratObjectPath $preprocess_object"
     def quantile_hto = "--quantile $quantile_hto"
     
     def kfunc = "--kfunc  $kfunc"
@@ -98,14 +99,17 @@ process htoDemux{
     def htoOutpath = "--htoDemuxOutPath $htoDemuxOutPath"
     def nameFileHTO = "--nameOutputFileHTO $nameOutputFileHTO "
     
+
+
     """
-      echo 'Running HTODemux'
-      Rscript $baseDir/R/HTODemux-args.R ${preprocess_object} ${quantile_hto} ${nstarts} ${nsamples} ${htoOutpath} ${nameFileHTO}
+      Rscript $baseDir/R/HTODemux-args.R ${preprocess_object} ${quantile_hto} ${kfunc} ${nstarts} ${nsamples} ${htoOutpath} ${nameFileHTO}
     """
 }
 
 process multiSeq{
-  path object_multi
+  publishDir path: "$params.outdir"
+  input:
+  path preprocess_object
   val quantile_multi
   //For Multi-seq
   val autoThresh
@@ -117,7 +121,7 @@ process multiSeq{
   val multiSeqOutPath
   val nameOutputFileMulti
 
-  def objectFile_multi = "--seuratObjectPath $object_multi"
+  def objectFile_multi = "--seuratObjectPath $preprocess_object"
   def quantile_multi = "--quantile $quantile"
   def objectFile = "--seuratObjectPath $object"
   def quantile = "--quantile $quantile"
@@ -135,6 +139,7 @@ process multiSeq{
     path 'rds_result_multi'
     path 'csv_result_multi'
 
+  
   script:
   """
     echo 'Running MULTI-seq'
@@ -144,6 +149,19 @@ process multiSeq{
 }
 
 
+process show{
+  input:
+  path preprocess_object
+
+
+  script:
+  """
+  echo recibido: $preprocess_object
+  
+  """
+
+
+}
 
 //Subworkflows
 workflow pre_processing{
@@ -156,39 +174,46 @@ workflow pre_processing{
 }
 
 
-workflow demul_htoDemux{
- take: 
-  
-  main:
-      htoDemux(pre_processing.out.output_object,params.quantile_hto, params.kfunc, params.nstarts, params.nsamples, params.htoOutpath, params.nameFileHTO)
-  emit:
-    htoDemux_out_rds = htoDemux.out[0]
-    htoDemux_out_csv = htoDemux.out[1]
+// workflow demul_htoDemux{
+//  take: 
+//     path pre_processing.out.output_object
+//   main:
+//       htoDemux(pre_processing.out.output_object,params.quantile_hto, params.kfunc, params.nstarts, params.nsamples, params.htoOutpath, params.nameFileHTO)
+//   emit:
+//     htoDemux_out_rds = htoDemux.out[0]
+//     htoDemux_out_csv = htoDemux.out[1]
 
-}
+// }
 
-workflow demul_multiSeq{
-  main:
-      multiSeq(pre_processing.out.output_object, params.quantile_multi, params.autoThresh, params.maxiter, params.qrangeFrom, params.qrangeTo, params.qrangeBy, params.verbose, params.multiSeqOutPath, params.nameOutputFileMulti)
-  emit:
-    multiSeq_out_rds = multiSeq.out[0]
-    multiSeq_out_csv = multiSeq.out[1]
-}
+// workflow demul_multiSeq{
+//   main:
+//       multiSeq(pre_processing.out.output_object, params.quantile_multi, params.autoThresh, params.maxiter, params.qrangeFrom, params.qrangeTo, params.qrangeBy, params.verbose, params.multiSeqOutPath, params.nameOutputFileMulti)
+//   emit:
+//     multiSeq_out_rds = multiSeq.out[0]
+//     multiSeq_out_csv = multiSeq.out[1]
+// }
 
 
 
 //Main workflow
 workflow{
-  take:
+  // take:
 
   main:
-    out_pre = pre_processing()
-    pre_processing.out.view({ "Received: $it" })
-    demul_htoDemux(out_pre)
+  out_pre = pre_processing()
+  //pre_processing.out.view({ "Received: $it" })
+  myFileChannel = Channel.fromPath(out_pre)
+  println(myFileChannel)
+  //htoDemux(myFileChannel,params.quantile_hto, params.kfunc, params.nstarts, params.nsamples, params.htoDemuxOutPath, params.nameOutputFileHTO)
+ 
+  //   demul_htoDemux(out_pre)
     //if mode on -> cual (ifs anidados)
    // if ()
 
    // else()
+
+
+
 
 }
 
