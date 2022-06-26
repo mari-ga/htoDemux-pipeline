@@ -25,7 +25,7 @@ p <- add_argument(p, "--nstarts",help="number of starts for demultiplex", type="
 p <- add_argument(p, "--nsamples",help="number of samples for demultiplex", type="numeric",default=100)
 
 #Output paths
-p <- add_argument(p, "--htoDemuxOutPath",help="Path to file where the results of htoDemux will be saved", default = NULL)
+#p <- add_argument(p, "--htoDemuxOutPath",help="Path to file where the results of htoDemux will be saved", default = NULL)
 p <- add_argument(p, "--nameOutputFileHTO",help="Name for the file containing the output of HTODemux object", default = "result.csv")
 
 
@@ -68,8 +68,8 @@ print("------------------- Percentage of largest gene --------------------------
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
 
 print(argv$kfunc)
-pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile,  nstarts = argv$nstarts, nsamples = argv$nsamples)
-#pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = "HTO", positive.quantile = 0.99)
+#pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile,  nstarts = argv$nstarts, nsamples = argv$nsamples)
+pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = "HTO", positive.quantile = 0.99)
 
 # Global classification results
 table(pbmc.hashtag$HTO_classification.global)
@@ -115,8 +115,8 @@ pbmc.hashtag
 
 #------------------Section 5 - Saving results ---------------------------"
 
-create_files <- function(name, path,extension) {
-  path_complete <- paste(path, name,extension,sep="")
+create_files <- function(name,extension) {
+  path_complete <- paste(name,extension,sep="")
   print(path_complete)
   if (file.exists(path_complete)) {
     print("The file already exists...")
@@ -132,10 +132,9 @@ create_files <- function(name, path,extension) {
 #Save Results
 print(argv$nameOutputFileHTO)
 print("-------")
-file_results <-create_files(argv$nameOutputFileHTO, argv$htoDemuxOutPath,".csv")
+file_results <-create_files(argv$nameOutputFileHTO,".csv")
 write.csv(pbmc.hashtag$HTO_classification.global, file=file_results)
-pbmc_file = paste(argv$htoDemuxOutPath,argv$nameOutputFileHTO,".rds",sep="")
-print(pbmc_file)
+pbmc_file = paste(argv$nameOutputFileHTO,".rds",sep="")
 saveRDS(pbmc.hashtag, file=pbmc_file)
 
 

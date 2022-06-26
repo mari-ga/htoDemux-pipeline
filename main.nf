@@ -1,27 +1,6 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
-/*
- * Input: 
-    Files for Pre Processing:
-    --umi-matrix.rds <path>
-    --hashtag-counts-matrix.rds <path>
-    Parameters for Pre-processing (Seurat object creation):
-    --selection_method
-    --number_features
-    --normalisation_method
-    --margin
-    --assay
-    --assayName
-    --demulOutPath
-    --nameOutputFile
-    Files for Seurat Demultiplexing:
-    --seuratObjectPath (output from pre processing)
 
-
-
-    
-    
-*/
 log.info """\
  Hashtag Demultiplexing - P I P E L I N E
  ===================================
@@ -29,198 +8,70 @@ log.info """\
 
  UMI-Counts: ${params.umi_count}
  HTO-Matrix: ${params.hto_mat}
- Intermediate object name: ${params.nameOutputFile}
- Intermediate object path: ${params.demulOutPath}
- Results: ${params.outdir}
- HTOOut: ${params.htoDemuxOutPath}
  """
 
-process preProcess{
-  
-  input:
-    path umi_counts
-    path hto_matrix
-    val selection_method
-    val number_features
-    val assay
-    val assayName
-    val margin
-    val normalisation_method
-    val demulOutPath
-    val nameOutputFile
+include { SEURAT } from './modules/seurat'
 
-  output:
-    path 'object.rds'  
-  
-  script:
-  def umiFile = "--fileUmi $umi_counts"
-  def htoFile = "--fileHto $hto_matrix"
-  def selectMethod = "--selectMethod $selection_method"
-  def numberFeatures = "--numberFeatures $number_features"
-  def assay = "--assay $assay"
-  def assayName = "--assayName $assayName"
-  def margin = "--margin $margin"
-  def normalisationMethod = "--normalisationMethod $normalisation_method"
-  def demulOutPath = "--demulOutPath $demulOutPath"
-  def fileName = " --nameOutputFile $nameOutputFile"
-
-
-  """
-  Rscript $baseDir/R/pre_processing.R ${umiFile} ${htoFile} ${selectMethod} ${numberFeatures} ${assay} ${assayName} ${margin} ${normalisationMethod} ${demulOutPath} ${fileName} > object.rds
-  
-  """
-}
-
-
-process htoDemux{
-  publishDir path: "$params.outdir"
-  input:
-    path preprocess_object
-    val quantile_hto
-    //For HTODemux
-    val kfunc
-    val nstarts
-    val nsamples
-    val htoDemuxOutPath
-    val nameOutputFileHTO
-    
-
-  output:
-    path 'rds_result_hto'
-    path 'csv_result_hto'
-  
-  script:
-    def objectFile_hto = "--seuratObjectPath $preprocess_object"
-    def quantile_hto = "--quantile $quantile_hto"
-    
-    def kfunc = "--kfunc  $kfunc"
-    def nstarts = "--nstarts $nstarts"
-    def nsamples = "--nsamples $nsamples " 
-    def htoOutpath = "--htoDemuxOutPath $htoDemuxOutPath"
-    def nameFileHTO = "--nameOutputFileHTO $nameOutputFileHTO "
-    
-
-
-    """
-      Rscript $baseDir/R/HTODemux-args.R ${preprocess_object} ${quantile_hto} ${kfunc} ${nstarts} ${nsamples} ${htoOutpath} ${nameFileHTO}
-    """
-}
-
-process multiSeq{
-  publishDir path: "$params.outdir"
-  input:
-  path preprocess_object
-  val quantile_multi
-  //For Multi-seq
-  val autoThresh
-  val maxiter
-  val qrangeFrom
-  val qrangeTo
-  val qrangeBy
-  val verbose
-  val multiSeqOutPath
-  val nameOutputFileMulti
-
-  def objectFile_multi = "--seuratObjectPath $preprocess_object"
-  def quantile_multi = "--quantile $quantile"
-  def objectFile = "--seuratObjectPath $object"
-  def quantile = "--quantile $quantile"
-  def autoThresh = "--autoThresh $autoThresh"
-  def maxiter = "--maxiter $maxiter"
-  def qrangeFrom = "--qrangeFrom $qrangeFrom"
-  def qrangeTo = "--qrangeTo $qrangeTo"
-  def qrangeBy = "--qrangeBy $qrangeBy"
-  def verbose = "--verbose $verbose"
-  def multiSeqOutPath = "--multiSeqOutPath $multiSeqOutPath"
-  def nameOutputFileMulti = "--nameOutputFileMulti $nameOutputFileMulti"
-
-
-  output:
-    path 'rds_result_multi'
-    path 'csv_result_multi'
-
-  
-  script:
-  """
-    echo 'Running MULTI-seq'
-    Rscript $baseDir/R/MULTI-seq.R ${objectFile_multi} ${quantile_multi} ${autoThresh} ${maxiter} ${qrangeFrom} ${qrangeTo} ${qrangeBy} ${verbose} ${multiSeqOutPath} ${nameOutputFileMulti}
-  """
-
-}
-
-
-process show{
-  input:
-  path preprocess_object
-
-
-  script:
-  """
-  echo recibido: $preprocess_object
-  
-  """
-
-
-}
-
-//Subworkflows
-workflow pre_processing{
-    def umi = Channel.fromPath(params.umi_count, checkIfExists: true )
-    def hto_matrix =  Channel.fromPath(params.hto_mat, checkIfExists: true )
-  main:
-    preProcess(umi,hto_matrix,params.selection_method, params.number_features, params.assay, params.assayName, params.margin, params.normalisation_method, params.demulOutPath, params.nameOutputFile)
-  emit:
-	  output_object = preProcess.out.view({ "Created: $it" })
-}
-
-
-// workflow demul_htoDemux{
-//  take: 
-//     path pre_processing.out.output_object
-//   main:
-//       htoDemux(pre_processing.out.output_object,params.quantile_hto, params.kfunc, params.nstarts, params.nsamples, params.htoOutpath, params.nameFileHTO)
-//   emit:
-//     htoDemux_out_rds = htoDemux.out[0]
-//     htoDemux_out_csv = htoDemux.out[1]
-
-// }
-
-// workflow demul_multiSeq{
-//   main:
-//       multiSeq(pre_processing.out.output_object, params.quantile_multi, params.autoThresh, params.maxiter, params.qrangeFrom, params.qrangeTo, params.qrangeBy, params.verbose, params.multiSeqOutPath, params.nameOutputFileMulti)
-//   emit:
-//     multiSeq_out_rds = multiSeq.out[0]
-//     multiSeq_out_csv = multiSeq.out[1]
-// }
-
-
-
-//Main workflow
 workflow{
-  // take:
+  //Params for pre-processing
+  umi = Channel.fromPath(params.umi_count, checkIfExists: true )
+  hto_matrix =  Channel.fromPath(params.hto_mat, checkIfExists: true )
+  sel_method = Channel.from(params.selection_method)
+  n_features = Channel.from(params.number_features)
+  assay = Channel.from(params.assay)
+  a_name = Channel.from(params.assayName)
+  margin = Channel.from(params.margin)
+  norm_method = Channel.from(params.normalisation_method)
+  out_file = Channel.from(params.nameOutputFile)
 
-  main:
-  out_pre = pre_processing()
-  //pre_processing.out.view({ "Received: $it" })
-  myFileChannel = Channel.fromPath(out_pre)
-  println(myFileChannel)
-  //htoDemux(myFileChannel,params.quantile_hto, params.kfunc, params.nstarts, params.nsamples, params.htoDemuxOutPath, params.nameOutputFileHTO)
- 
-  //   demul_htoDemux(out_pre)
-    //if mode on -> cual (ifs anidados)
-   // if ()
+  //Params for HTODemul
+  quantile_hto = Channel.from(params.quantile_hto)
+  kfunc = Channel.from(params.kfunc)
+  n_stars = Channel.from(params.nstarts)
+  n_samples = Channel.from(params.nsamples)
+  out_hto = Channel.from(params.nameOutputFileHTO)
 
-   // else()
+  //Params for MULTI-seq
+  quantile_multi = Channel.from(params.quantile_multi)
+  autoThresh = Channel.from(params.autoThresh)
+  maxIter = Channel.from(params.maxiter)
+  qrangeFrom = Channel.from(params.qrangeFrom)
+  qrangeTo = Channel.from(params.qrangeTo)
+  qrangeBy = Channel.from(params.qrangeBy)
+  verbose = Channel.from(params.verbose)
+  out_multi = Channel.from(params.nameOutputFileMulti)
 
+  //Params for HTO-Demul visualisation
+  ridgePlot = Channel.from(params.ridgePlot)
+  ridgeNCol = Channel.from(params.ridgeNCol)
+  featureScatter = Channel.from(params.featureScatter)
+  scatterFeat1 = Channel.from(params.scatterFeat1)
+  scatterFeat2 = Channel.from(params.scatterFeat2)
+  vlnplot = Channel.from(params.vlnplot)
+  vlnFeatures = Channel.from(params.vlnFeatures)
+  vlnLog = Channel.from(params.vlnLog)
+  tsne = Channel.from(params.tsne)
+  tseIdents = Channel.from(params.tseIdents)
+  tsneInvert = Channel.from(params.tsneInvert)
+  tsneVerbose = Channel.from(params.tsneVerbose)
+  tsneApprox = Channel.from(params.tsneApprox)
+  tsneDimMax = Channel.from(params.tsneDimMax)
+  tsePerplexity = Channel.from(params.tsePerplexity)
+  heatmap = Channel.from(params.heatmap)
+  heatmapNcells = Channel.from(params.heatmapNcells)
 
+  //Params for Hashed Drops
+  nameOutputFileDrops = Channel.from(params.nameOutputFileDrops)
+  nameOutputFileHashed = Channel.from(params.nameOutputFileHashed)
+  ambient = Channel.from(params.ambient)
+  minProp = Channel.from(params.minProp)
+  pseudoCount = Channel.from(params.pseudoCount)
+  constAmbient = Channel.from(params.constAmbient)
+  doubletNmads = Channel.from(params.doubletNmads)
+  confidenMin = Channel.from(params.confidenMin)
+  combinations = Channel.from(params.combinations)
 
+  //incluir un if - seurat entra a todo el mambo
+  SEURAT(umi,hto_matrix, sel_method, n_features, assay, a_name, margin,norm_method, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi, ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
 
 }
-
-
-workflow.onComplete { 
-  println ("Done")
-}
-
-
-

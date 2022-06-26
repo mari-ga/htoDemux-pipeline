@@ -28,7 +28,7 @@ p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 p <- add_argument(p, "--converter",help="Transform both input matrices into csv and hdf5 respectively for demuxEM", default = FALSE)
 p <- add_argument(p, "--conversionPath",help="Path to save both converted files", default = NULL)
 #Parameters - section 2
-p <- add_argument(p, "--selectMethod",help="Selection method", default="vst")
+p <- add_argument(p, "--selectMethod",help="Selection method", default="mean.var.plot")
 p <- add_argument(p, "--numberFeatures",help="Number of features to be used when finding variable features", type="numeric", default=2000)
 p <- add_argument(p, "--assay",help="Choose assay between RNA or HTO",default="HTO")
 
@@ -38,8 +38,8 @@ p <- add_argument(p, "--margin",help="Margin for normalisation", type="numeric",
 p <- add_argument(p, "--assayName",help="Name of the Hashtag assay HTO by default",default="HTO")
 
 #Output paths
-p <- add_argument(p, "--demulOutPath",help="Path to file where the rds object ready for demultiplexing will be saved", default = NULL)
-p <- add_argument(p, "--nameOutputFile",help="Name for the file containing the output of HTODemux hashtag", default = "result")
+#p <- add_argument(p, "--demulOutPath",help="Path to file where the rds object ready for demultiplexing will be saved", default = NULL)
+p <- add_argument(p, "--nameOutputFile",help="Name for the file containing the output of HTODemux hashtag", default = "object")
 
 argv <- parse_args(p)
 
@@ -71,7 +71,9 @@ pbmc.hashtag <- CreateSeuratObject(counts = pbmc.umis)
 # Add HTO data as a new assay independent from RNA
 pbmc.hashtag[[argv$assayName]] <- CreateAssayObject(counts = pbmc.htos)
 # Normalize HTO data
-pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
+#pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
+pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod)
+
 
 
 #------------------Section 5 - Save object for demultiplex ---------------------------
@@ -96,9 +98,10 @@ create_files <- function(name, path,extension,converter) {
 
 
 #Save Results
-pbmc_file = paste(argv$demulOutPath,argv$nameOutputFile,".rds",sep="")
+#pbmc_file = paste(argv$demulOutPath,argv$nameOutputFile,".rds",sep="")
+pbmc_file = paste(argv$nameOutputFile,".rds",sep="")
 saveRDS(pbmc.hashtag, file=pbmc_file)
-print(pbmc_file)
+
 
 #-------------- Section 6 - convert files for demuxEM (optional) --------------------------
 

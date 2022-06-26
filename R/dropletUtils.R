@@ -20,8 +20,19 @@ p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 
 
 #Output paths
-p <- add_argument(p, "--hashedDropsPath",help="Path to file where the results of Hashed Drops will be saved", default = NULL)
-p <- add_argument(p, "--nameOutputFileDrops",help="Name for the file containing the output of Hashed Drop object", default = "result.csv")
+#p <- add_argument(p, "--hashedDropsPath",help="Path to file where the results of Hashed Drops will be saved", default = NULL)
+p <- add_argument(p, "--nameOutputFileDrops",help="Name for the file containing the output of Hashed Drop object", default = "resultHashed.csv")
+p <- add_argument(p, "--nameOutputFileHashed",help="Name for the rds Object containing the Hashed Drop results", default = "resultHashed.rds")
+
+#Demultiplexing parameters
+p <- add_argument(p, "--ambient",help="Specifies the relative abundance of each HTO in the ambient solution", default = NULL)
+p <- add_argument(p, "--minProp",help="infer the ambient profile when ambient=NULL", default = 0.05)
+p <- add_argument(p, "--pseudoCount",help="minimum pseudo-count when computing log-fold changes", default = 5)
+p <- add_argument(p, "--constAmbient",help=" indicates whether a constant level of ambient contamination should be used to estimate LogFC2 for all cells", default = FALSE)
+p <- add_argument(p, "--doubletNmads",help="Specifies the number of median absolute deviations (MADs) to use to identify doublets.", default = 3)
+p <- add_argument(p, "--confidenMin",help="Specifiesthe minimum threshold on the log-fold change to use to identify singlets.", default = 2)
+p <- add_argument(p, "--combinations",help="Specifies valid combinations of HTOs", default = NULL)
+
 
 argv <- parse_args(p)
 
@@ -41,9 +52,8 @@ pbmc.htos <- as.matrix(pbmc.htos[, joint.bcs])
 rownames(pbmc.htos)
 
 #---------------- Section 2 - Demultiplexing -----------------
-hashed <- hashedDrops(pbmc.htos,  ambient = NULL,min.prop = 0.05,constant.ambient = FALSE,)
+hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, pseudo.count=argv$pseudoCount, constant.ambient = argv$constAmbient, doublet.nmads=argv$doubletNmads,confident.min=argv$confidenMin ,combinations=argv$combinations)
 #hashed <- hashedDrops(pbmc.umis,  ambient = NULL,min.prop = 0.05,constant.ambient = FALSE,)
-str(hashed)
 
 print("------------------")
 typeof(hashed)
@@ -55,8 +65,8 @@ str(pbmc.htos)
 
 #------------------Section 3 - Saving results ---------------------------"
 
-create_files <- function(name, path,extension) {
-  path_complete <- paste(path, name,extension,sep="")
+create_files <- function(name,extension) {
+  path_complete <- paste( name,extension,sep="")
   print(path_complete)
   if (file.exists(path_complete)) {
     print("The file already exists...")
@@ -68,6 +78,9 @@ create_files <- function(name, path,extension) {
   }
 }
 
-file_results <-create_files(argv$nameOutputFileDrops, argv$hashedDropsPath,".csv")
+file_results <-create_files(argv$nameOutputFileDrops,".csv")
 write.csv(hashed, file=file_results)
+pbmc_file = paste(argv$nameOutputFileHashed,".rds",sep="")
+print(pbmc_file)
+saveRDS(hashed, file=pbmc_file)
 
