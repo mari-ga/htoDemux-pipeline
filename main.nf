@@ -74,4 +74,6 @@ workflow{
   //incluir un if - seurat entra a todo el mambo
   SEURAT(umi,hto_matrix, sel_method, n_features, assay, a_name, margin,norm_method, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi, ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
 
+  HASHED_DROPS(umi,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,confidenMin,combinations)
+
 }
