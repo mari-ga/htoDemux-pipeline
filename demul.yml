@@ -5,13 +5,14 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9.12
+  - defaults::python=3.9
   - hdf5=1.10.6
   - nextflow=22.04.0
   - ipython=8.3.0
   - coreutils=8.25
   - python-fastjsonschema=2.15.1
   - r-base=4.1
+  - pip
   - pip:
     - argparse==1.4.0
     - asciitree==0.3.3
