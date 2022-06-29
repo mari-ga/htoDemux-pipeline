@@ -25,14 +25,18 @@ p <- add_argument(p, "--nameOutputFileDrops",help="Name for the file containing 
 p <- add_argument(p, "--nameOutputFileHashed",help="Name for the rds Object containing the Hashed Drop results", default = "resultHashed.rds")
 
 #Demultiplexing parameters
-p <- add_argument(p, "--ambient",help="Specifies the relative abundance of each HTO in the ambient solution", default = NULL)
+p <- add_argument(p, "--ambient",help="Specifies the relative abundance of each HTO in the ambient solution", default = "NULL")
 p <- add_argument(p, "--minProp",help="infer the ambient profile when ambient=NULL", default = 0.05)
 p <- add_argument(p, "--pseudoCount",help="minimum pseudo-count when computing log-fold changes", default = 5)
 p <- add_argument(p, "--constAmbient",help=" indicates whether a constant level of ambient contamination should be used to estimate LogFC2 for all cells", default = FALSE)
 p <- add_argument(p, "--doubletNmads",help="Specifies the number of median absolute deviations (MADs) to use to identify doublets.", default = 3)
-p <- add_argument(p, "--confidenMin",help="Specifiesthe minimum threshold on the log-fold change to use to identify singlets.", default = 2)
+p <- add_argument(p, "--doubletMin",help="Specifies the number of median absolute deviations (MADs) to use to identify doublets.", default = 2)
+p <- add_argument(p, "--confidenMin",help="Specifies the minimum threshold on the log-fold change to use to identify singlets.", default = 2)
+p <- add_argument(p, "--confidentNmads",help="Specifies the number of MADs to use to identify confidently assigned singlet3", default = 3)
+
 p <- add_argument(p, "--combinations",help="Specifies valid combinations of HTOs", default = NULL)
 
+ 
 
 argv <- parse_args(p)
 
@@ -50,16 +54,14 @@ pbmc.htos <- as.matrix(pbmc.htos[, joint.bcs])
 
 # Confirm that the HTO have the correct names
 rownames(pbmc.htos)
+print(argv$ambient)
 
 #---------------- Section 2 - Demultiplexing -----------------
-hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, pseudo.count=argv$pseudoCount, constant.ambient = argv$constAmbient, doublet.nmads=argv$doubletNmads,confident.min=argv$confidenMin ,combinations=argv$combinations)
+#hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, pseudo.count=argv$pseudoCount, constant.ambient = argv$constAmbient, doublet.nmads=argv$doubletNmads, confident.min=argv$confidenMin ,combinations=argv$combinations,confident.nmads=argv$confidentNmads,doublet.min=arg$doubletMin)
+#hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, constant.ambient = argv$constAmbient)
+hashed <- hashedDrops(pbmc.htos, ambient = NULL, min.prop = argv$minProp, constant.ambient = argv$constAmbient,doublet.nmads=argv$doubletNmads)
+
 #hashed <- hashedDrops(pbmc.umis,  ambient = NULL,min.prop = 0.05,constant.ambient = FALSE,)
-
-print("------------------")
-typeof(hashed)
-
-print("------------------")
-str(pbmc.htos)
 
 
 
