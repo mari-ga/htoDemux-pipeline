@@ -65,7 +65,7 @@ workflow SEURAT{
         HTODEMUL(PREPROCESS.out,quantile_hto,kfunc,n_stars,n_samples,out_hto)
         if(params.visualisationSeurat == 'TRUE')
         {
-            HTO_VISUALISATION(HTODEMUL.out[0],ridgePlot,ridgeNCol,featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
+            HTO_VISUALISATION(HTODEMUL.out[0],a_name, ridgePlot,ridgeNCol,featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
         }
         
     }

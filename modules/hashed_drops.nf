@@ -13,7 +13,9 @@ workflow HASHED_DROPS{
         pseudoCount
         constAmbient
         doubletNmads
+        doubletMin
         confidenMin
+        confidentNmads
         combinations
 
 
@@ -21,7 +23,7 @@ workflow HASHED_DROPS{
     main:
         if(params.hashedMode == "TRUE")
         {
-           HASHED_DROPS_DEMUL(umi_matrix,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient,minProp,pseudoCount,constAmbient,doubletNmads,confidenMin,combinations) 
+           HASHED_DROPS_DEMUL(umi_matrix,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient,minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations) 
         }
 
 

@@ -11,7 +11,9 @@ process HASHED_DROPS_DEMUL{
         val pseudoCount
         val constAmbient
         val doubletNmads
+        val doubletMin
         val confidenMin
+        val confidentNmads
         val combinations
 
     output:
@@ -20,7 +22,7 @@ process HASHED_DROPS_DEMUL{
 
     script:
         """ 
-            Rscript $baseDir/R/dropletUtils.R --fileUmi $umi_counts -fileHto $hto_matrix --nameOutputFileDrops $nameOutputFileDrops --nameOutputFileHashed $nameOutputFileHashed --ambient $ambient --minProp $minProp --pseudoCount $pseudoCount --constAmbient $constAmbient --doubletNmads $doubletNmads --confidenMin $confidenMin --combinations $combinations
+            Rscript $baseDir/R/dropletUtils.R --fileUmi $umi_counts -fileHto $hto_matrix --nameOutputFileDrops $nameOutputFileDrops --nameOutputFileHashed $nameOutputFileHashed --ambient $ambient --minProp $minProp --pseudoCount $pseudoCount --constAmbient $constAmbient --doubletNmads $doubletNmads --doubletMin $doubletMin --confidenMin $confidenMin --confidentNmads $confidentNmads --combinations $combinations
         """
 
 }
