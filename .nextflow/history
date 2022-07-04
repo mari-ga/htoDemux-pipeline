@@ -1,0 +1,8 @@
+2022-07-03 14:08:31	33.5s	drunk_poitras	ERR	5504ea742cdfbc81251c3df299f1edf9	839a7587-3655-4350-9590-b4e5f0e62dad	nextflow run main.nf
+2022-07-03 14:09:14	34.6s	sharp_kowalevski	ERR	5504ea742cdfbc81251c3df299f1edf9	6ae9e44f-61ef-495d-af74-7240fe8324eb	nextflow run main.nf
+2022-07-03 14:51:18	32.2s	drunk_albattani	ERR	5504ea742cdfbc81251c3df299f1edf9	1ea3f1c8-bfd7-4bb1-9c10-6712393c60a3	nextflow run main.nf
+2022-07-03 14:53:22	31.6s	festering_stone	ERR	5504ea742cdfbc81251c3df299f1edf9	7043a66b-55ef-4363-ad20-864832b3cf66	nextflow run main.nf
+2022-07-03 15:05:13	35.5s	big_meninsky	ERR	5504ea742cdfbc81251c3df299f1edf9	5a4c2005-0f88-43d3-ac73-ca7a1e5e3a9e	nextflow run main.nf --scatterFeat1 hto_HTO-A --scatterFeat2 hto_HTO-B
+2022-07-03 18:47:14	34.7s	tiny_wilson	ERR	5504ea742cdfbc81251c3df299f1edf9	f4c76154-50b0-49fc-95d2-722b8c352518	nextflow run main.nf --scatterFeat1 hto_HTO-A --scatterFeat2 hto_HTO-B
+2022-07-03 18:51:53	34.3s	elated_blackwell	ERR	5504ea742cdfbc81251c3df299f1edf9	ac9459a8-1998-436c-b58d-14d77b651e34	nextflow run main.nf --scatterFeat1 hto_HTO-A --scatterFeat2 hto_HTO-B
+2022-07-03 19:03:00	34s	gigantic_cori	OK	5504ea742cdfbc81251c3df299f1edf9	5857b3e4-e93d-4708-9b16-ff3556465503	nextflow run main.nf --scatterFeat1 hto_HTO-A --scatterFeat2 hto_HTO-B --tsne FALSE

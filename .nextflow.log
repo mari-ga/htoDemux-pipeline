@@ -1,0 +1,69 @@
+jul.-03 19:02:59.125 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf --scatterFeat1 hto_HTO-A --scatterFeat2 hto_HTO-B --tsne FALSE
+jul.-03 19:02:59.210 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 22.04.0
+jul.-03 19:02:59.234 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/nextflow.config
+jul.-03 19:02:59.235 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/nextflow.config
+jul.-03 19:02:59.266 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+jul.-03 19:03:00.038 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [gigantic_cori] DSL2 - revision: 5504ea742c
+jul.-03 19:03:00.054 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/Users/mylenemarianagonzalesandre/.nextflow/plugins; core-plugins: nf-amazon@1.7.1,nf-azure@0.13.1,nf-console@1.0.3,nf-ga4gh@1.0.3,nf-google@1.1.4,nf-sqldb@0.4.0,nf-tower@1.4.0
+jul.-03 19:03:00.055 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+jul.-03 19:03:00.067 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+jul.-03 19:03:00.068 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+jul.-03 19:03:00.072 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+jul.-03 19:03:00.083 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+jul.-03 19:03:00.150 [main] DEBUG nextflow.Session - Session uuid: 5857b3e4-e93d-4708-9b16-ff3556465503
+jul.-03 19:03:00.151 [main] DEBUG nextflow.Session - Run name: gigantic_cori
+jul.-03 19:03:00.151 [main] DEBUG nextflow.Session - Executor pool size: 12
+jul.-03 19:03:00.333 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 22.04.0 build 5697
+  Created: 23-04-2022 18:00 UTC (20:00 GMT+02:00)
+  System: Mac OS X 12.4
+  Runtime: Groovy 3.0.10 on OpenJDK 64-Bit Server VM 11.0.13+7-b1751.21
+  Encoding: UTF-8 (UTF-8)
+  Process: 19989@MacBook-Pro-de-Mylene.local [127.0.0.1]
+  CPUs: 12 - Mem: 16 GB (99.9 MB) - Swap: 2 GB (1 GB)
+jul.-03 19:03:00.345 [main] DEBUG nextflow.Session - Work-dir: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/work [Mac OS X]
+jul.-03 19:03:00.345 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/bin
+jul.-03 19:03:00.356 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+jul.-03 19:03:00.366 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+jul.-03 19:03:00.399 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+jul.-03 19:03:00.411 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 13; maxThreads: 1000
+jul.-03 19:03:00.496 [main] DEBUG nextflow.Session - Session start invoked
+jul.-03 19:03:00.826 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+jul.-03 19:03:00.843 [main] INFO  nextflow.Nextflow -  Hashtag Demultiplexing - P I P E L I N E
+ ===================================
+ Input Files:
+
+ UMI-Counts: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/data/pbmc_umi_mtx.rds
+ HTO-Matrix: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/data/pbmc_hto_mtx.rds
+ 
+jul.-03 19:03:01.535 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+jul.-03 19:03:01.535 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+jul.-03 19:03:01.539 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+jul.-03 19:03:01.546 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=12; memory=16 GB; capacity=12; pollInterval=100ms; dumpInterval=5m
+jul.-03 19:03:01.624 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+jul.-03 19:03:01.624 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+jul.-03 19:03:01.628 [main] INFO  nextflow.script.BaseScript - DataflowBroadcast around DataflowStream[?]
+jul.-03 19:03:01.633 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+jul.-03 19:03:01.633 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+jul.-03 19:03:01.637 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: PREPROCESS, SEURAT:PREPROCESS, SEURAT:HTODEMUL, HTO_VISUALISATION, MULTISEQ, HASHED_DROPS_DEMUL, SEURAT:HTO_VISUALISATION, HTODEMUL
+jul.-03 19:03:01.637 [main] DEBUG nextflow.Session - Ignite dataflow network (53)
+jul.-03 19:03:01.649 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SEURAT:PREPROCESS
+jul.-03 19:03:01.650 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SEURAT:HTODEMUL
+jul.-03 19:03:01.650 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SEURAT:HTO_VISUALISATION
+jul.-03 19:03:01.651 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+jul.-03 19:03:01.651 [main] DEBUG nextflow.Session - Session await
+jul.-03 19:03:01.777 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+jul.-03 19:03:01.784 [Task submitter] INFO  nextflow.Session - [26/7bcaa8] Submitted process > SEURAT:PREPROCESS (1)
+jul.-03 19:03:14.495 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: SEURAT:PREPROCESS (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/work/26/7bcaa899afa566b75a25e3672318d6]
+jul.-03 19:03:14.515 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+jul.-03 19:03:14.515 [Task submitter] INFO  nextflow.Session - [dd/e482f5] Submitted process > SEURAT:HTODEMUL (1)
+jul.-03 19:03:14.523 [Task monitor] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=4; maxSize=4; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+jul.-03 19:03:27.354 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 2; name: SEURAT:HTODEMUL (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/work/dd/e482f5d178c298e96d1f275701b92c]
+jul.-03 19:03:27.367 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+jul.-03 19:03:27.367 [Task submitter] INFO  nextflow.Session - [5d/5df7cd] Submitted process > SEURAT:HTO_VISUALISATION (1)
+jul.-03 19:03:33.775 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 3; name: SEURAT:HTO_VISUALISATION (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/work/5d/5df7cdd6731bfcfb3b0d5e5d5122e3]
+jul.-03 19:03:33.792 [main] DEBUG nextflow.Session - Session await > all process finished
+jul.-03 19:03:33.793 [main] DEBUG nextflow.Session - Session await > all barriers passed
+jul.-03 19:03:33.804 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=3; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=31.7s; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=1; peakMemory=0; ]
+jul.-03 19:03:33.974 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+jul.-03 19:03:33.986 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

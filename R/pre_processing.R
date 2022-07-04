@@ -71,8 +71,8 @@ pbmc.hashtag <- CreateSeuratObject(counts = pbmc.umis)
 # Add HTO data as a new assay independent from RNA
 pbmc.hashtag[[argv$assayName]] <- CreateAssayObject(counts = pbmc.htos)
 # Normalize HTO data
-#pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
-pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod)
+pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
+#pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod)
 
 
 

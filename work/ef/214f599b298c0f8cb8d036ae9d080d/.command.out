@@ -1,0 +1,269 @@
+> 
+> #Libraries
+> library(Seurat)
+> library(argparser, quietly=TRUE)
+> library(ggplot2)
+> 
+> # Create a parser
+> p <- arg_parser("Parameters for HTODemux")
+> 
+> #Parameters - section 1
+> #Import files
+> 
+> p <- add_argument(p, "--seuratObjectPath",help="seurat object ready for demultiplex step", default = NULL)
+> 
+> #parameters - section 4
+> p <- add_argument(p, "--quantile",help="Positive quantile per default: 0.99", type="numeric",default=0.99)
+> p <- add_argument(p, "--kfunc",help="Cluster function choose between: Clara - kmeans",default=NULL)
+> p <- add_argument(p, "--nstarts",help="number of starts for demultiplex", type="numeric",default=100)
+> p <- add_argument(p, "--nsamples",help="number of samples for demultiplex", type="numeric",default=100)
+> 
+> #Output paths
+> #p <- add_argument(p, "--htoDemuxOutPath",help="Path to file where the results of htoDemux will be saved", default = NULL)
+> p <- add_argument(p, "--nameOutputFileHTO",help="Name for the file containing the output of HTODemux object", default = "result.csv")
+> 
+> 
+> argv <- parse_args(p)
+> 
+> #------------------ Loading Seurat object ---------------------
+> 
+> pbmc.hashtag <-readRDS(argv$seuratObjectPath)
+> str(pbmc.hashtag)
+Formal class 'Seurat' [package "SeuratObject"] with 13 slots
+  ..@ assays      :List of 2
+  .. ..$ RNA:Formal class 'Assay' [package "SeuratObject"] with 8 slots
+  .. .. .. ..@ counts       :Formal class 'dgCMatrix' [package "Matrix"] with 6 slots
+  .. .. .. .. .. ..@ i       : int [1:6155342] 1338 1450 1611 1870 1954 2247 2299 2363 2374 2396 ...
+  .. .. .. .. .. ..@ p       : int [1:16917] 0 210 384 652 993 1254 1459 1615 1867 2097 ...
+  .. .. .. .. .. ..@ Dim     : int [1:2] 27117 16916
+  .. .. .. .. .. ..@ Dimnames:List of 2
+  .. .. .. .. .. .. ..$ : chr [1:27117] "A1BG" "A1BG-AS1" "A1CF" "A2M" ...
+  .. .. .. .. .. .. ..$ : chr [1:16916] "AGGCCACAGCGTCTAT" "ATTGGTGAGTTCGCAT" "GTGCAGCTCAGTCCCT" "TAGTTGGGTCATACTG" ...
+  .. .. .. .. .. ..@ x       : num [1:6155342] 2 1 4 1 1 1 1 1 1 1 ...
+  .. .. .. .. .. ..@ factors : list()
+  .. .. .. ..@ data         :Formal class 'dgCMatrix' [package "Matrix"] with 6 slots
+  .. .. .. .. .. ..@ i       : int [1:6155342] 1338 1450 1611 1870 1954 2247 2299 2363 2374 2396 ...
+  .. .. .. .. .. ..@ p       : int [1:16917] 0 210 384 652 993 1254 1459 1615 1867 2097 ...
+  .. .. .. .. .. ..@ Dim     : int [1:2] 27117 16916
+  .. .. .. .. .. ..@ Dimnames:List of 2
+  .. .. .. .. .. .. ..$ : chr [1:27117] "A1BG" "A1BG-AS1" "A1CF" "A2M" ...
+  .. .. .. .. .. .. ..$ : chr [1:16916] "AGGCCACAGCGTCTAT" "ATTGGTGAGTTCGCAT" "GTGCAGCTCAGTCCCT" "TAGTTGGGTCATACTG" ...
+  .. .. .. .. .. ..@ x       : num [1:6155342] 2 1 4 1 1 1 1 1 1 1 ...
+  .. .. .. .. .. ..@ factors : list()
+  .. .. .. ..@ scale.data   : num[0 , 0 ] 
+  .. .. .. ..@ key          : chr "rna_"
+  .. .. .. ..@ assay.orig   : NULL
+  .. .. .. ..@ var.features : logi(0) 
+  .. .. .. ..@ meta.features:'data.frame':	27117 obs. of  0 variables
+  .. .. .. ..@ misc         : list()
+  .. ..$ HTO:Formal class 'Assay' [package "SeuratObject"] with 8 slots
+  .. .. .. ..@ counts       :Formal class 'dgCMatrix' [package "Matrix"] with 6 slots
+  .. .. .. .. .. ..@ i       : int [1:131137] 0 2 3 4 5 6 7 0 1 2 ...
+  .. .. .. .. .. ..@ p       : int [1:16917] 0 7 15 22 30 38 46 54 61 69 ...
+  .. .. .. .. .. ..@ Dim     : int [1:2] 8 16916
+  .. .. .. .. .. ..@ Dimnames:List of 2
+  .. .. .. .. .. .. ..$ : chr [1:8] "HTO-A" "HTO-B" "HTO-C" "HTO-D" ...
+  .. .. .. .. .. .. ..$ : chr [1:16916] "AGGCCACAGCGTCTAT" "ATTGGTGAGTTCGCAT" "GTGCAGCTCAGTCCCT" "TAGTTGGGTCATACTG" ...
+  .. .. .. .. .. ..@ x       : num [1:131137] 3 1 10 10 12 ...
+  .. .. .. .. .. ..@ factors : list()
+  .. .. .. ..@ data         : num [1:8, 1:16916] 0.2183 0 0.0782 0.5951 0.5951 ...
+  .. .. .. .. ..- attr(*, "dimnames")=List of 2
+  .. .. .. .. .. ..$ : chr [1:8] "HTO-A" "HTO-B" "HTO-C" "HTO-D" ...
+  .. .. .. .. .. ..$ : chr [1:16916] "AGGCCACAGCGTCTAT" "ATTGGTGAGTTCGCAT" "GTGCAGCTCAGTCCCT" "TAGTTGGGTCATACTG" ...
+  .. .. .. ..@ scale.data   : num[0 , 0 ] 
+  .. .. .. ..@ key          : chr "hto_"
+  .. .. .. ..@ assay.orig   : NULL
+  .. .. .. ..@ var.features : logi(0) 
+  .. .. .. ..@ meta.features:'data.frame':	8 obs. of  0 variables
+  .. .. .. ..@ misc         : list()
+  ..@ meta.data   :'data.frame':	16916 obs. of  5 variables:
+  .. ..$ orig.ident  : Factor w/ 1 level "SeuratProject": 1 1 1 1 1 1 1 1 1 1 ...
+  .. ..$ nCount_RNA  : num [1:16916] 273 305 445 691 349 ...
+  .. ..$ nFeature_RNA: int [1:16916] 210 174 268 341 261 205 156 252 230 200 ...
+  .. ..$ nCount_HTO  : num [1:16916] 4200 3475 1211 955 1912 ...
+  .. ..$ nFeature_HTO: int [1:16916] 7 8 7 8 8 8 8 7 8 8 ...
+  ..@ active.assay: chr "RNA"
+  ..@ active.ident: Factor w/ 1 level "SeuratProject": 1 1 1 1 1 1 1 1 1 1 ...
+  .. ..- attr(*, "names")= chr [1:16916] "AGGCCACAGCGTCTAT" "ATTGGTGAGTTCGCAT" "GTGCAGCTCAGTCCCT" "TAGTTGGGTCATACTG" ...
+  ..@ graphs      : list()
+  ..@ neighbors   : list()
+  ..@ reductions  : list()
+  ..@ images      : list()
+  ..@ project.name: chr "SeuratProject"
+  ..@ misc        : list()
+  ..@ version     :Classes 'package_version', 'numeric_version'  hidden list of 1
+  .. ..$ : int [1:3] 4 1 0
+  ..@ commands    :List of 1
+  .. ..$ NormalizeData.HTO:Formal class 'SeuratCommand' [package "SeuratObject"] with 5 slots
+  .. .. .. ..@ name       : chr "NormalizeData.HTO"
+  .. .. .. ..@ time.stamp : POSIXct[1:1], format: "2022-07-03 18:52:01"
+  .. .. .. ..@ assay.used : chr "HTO"
+  .. .. .. ..@ call.string: chr [1:2] "NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, " "    margin = argv$margin)"
+  .. .. .. ..@ params     :List of 5
+  .. .. .. .. ..$ assay               : chr "HTO"
+  .. .. .. .. ..$ normalization.method: chr "CLR"
+  .. .. .. .. ..$ scale.factor        : num 10000
+  .. .. .. .. ..$ margin              : num 2
+  .. .. .. .. ..$ verbose             : logi TRUE
+  ..@ tools       : list()
+> 
+> 
+> print("------------------- Percentage of largest gene ----------------------------")
+[1] "------------------- Percentage of largest gene ----------------------------"
+> 
+> # apply(
+> #   pbmc.hashtag@assays$RNA@counts,
+> #   2,
+> #   function(x)(100*max(x))/sum(x)
+> # ) -> pbmc.hashtag$Percent.Largest.Gene
+> # 
+> # head(pbmc.hashtag$Percent.Largest.Gene)
+> 
+> 
+> # print("---------------------Amount of MT genes--------------------------")
+> # 
+> # 
+> # grep("^MT-",rownames(pbmc.hashtag@assays$RNA@counts),value = TRUE)
+> # PercentageFeatureSet(data,pattern="^MT-") -> data$percent.MT
+> # 
+> # head(data$percent.MT)
+> 
+> #head(x = pbmc.hashtag[[c("nFeatureRNA","HTO_classification")]])
+> 
+> 
+> #------------------ Section 3 - adding HTO data as an independent assay ---------------------
+> 
+> # Normalize HTO data, here we use centered log-ratio (CLR) transformation
+> #pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
+> #DefaultAssay(pbmc.hashtag) <-"HTO"
+> 
+> #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
+> 
+> print(argv$kfunc)
+[1] "kmeans"
+> #pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile,  nstarts = argv$nstarts, nsamples = argv$nsamples)
+> pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = "HTO", positive.quantile = 0.99)
+> 
+> # Global classification results
+> table(pbmc.hashtag$HTO_classification.global)
+
+ Doublet Negative  Singlet 
+    2409      572    13935 
+> 
+> 
+> table(pbmc.hashtag$HTO_classification)
+
+      HTO-A HTO-A_HTO-B HTO-A_HTO-C HTO-A_HTO-D HTO-A_HTO-E HTO-A_HTO-F 
+       1761          89          99          78          93          76 
+HTO-A_HTO-G HTO-A_HTO-H       HTO-B HTO-B_HTO-C HTO-B_HTO-D HTO-B_HTO-E 
+         72          76        2015         115         105          97 
+HTO-B_HTO-F HTO-B_HTO-G HTO-B_HTO-H       HTO-C HTO-C_HTO-D HTO-C_HTO-E 
+        100          97         116        1875         101          76 
+HTO-C_HTO-F HTO-C_HTO-G HTO-C_HTO-H       HTO-D HTO-D_HTO-E HTO-D_HTO-F 
+         89          89          77        1728          63          66 
+HTO-D_HTO-G HTO-D_HTO-H       HTO-E HTO-E_HTO-F HTO-E_HTO-G HTO-E_HTO-H 
+         83          83        1507          50          84          79 
+      HTO-F HTO-F_HTO-G HTO-F_HTO-H       HTO-G HTO-G_HTO-H       HTO-H 
+       1500          87          71        1742          98        1807 
+   Negative 
+        572 
+> 
+> print("-----------------------------------------------")
+[1] "-----------------------------------------------"
+> 
+> pbmc.hashtag
+An object of class Seurat 
+27125 features across 16916 samples within 2 assays 
+Active assay: RNA (27117 features, 0 variable features)
+ 1 other assay present: HTO
+> print("-----------------------------------------------")
+[1] "-----------------------------------------------"
+> 
+> dim(x = pbmc.hashtag)
+[1] 27117 16916
+> print("-----------------------------------------------")
+[1] "-----------------------------------------------"
+> 
+> head(x = rownames(x = pbmc.hashtag))
+[1] "A1BG"     "A1BG-AS1" "A1CF"     "A2M"      "A2M-AS1"  "A2ML1"   
+> 
+> head(x = colnames(x = pbmc.hashtag))
+[1] "AGGCCACAGCGTCTAT" "ATTGGTGAGTTCGCAT" "GTGCAGCTCAGTCCCT" "TAGTTGGGTCATACTG"
+[5] "TTCTTAGAGAAGGCCT" "TAGACCAGTGTAACGG"
+> 
+> names(x = pbmc.hashtag)
+[1] "RNA" "HTO"
+> 
+> print("-----------------------------------------------")
+[1] "-----------------------------------------------"
+> 
+> pbmc.hashtag[['RNA']]
+Assay data with 27117 features for 16916 cells
+First 10 features:
+ A1BG, A1BG-AS1, A1CF, A2M, A2M-AS1, A2ML1, A2ML1-AS1, A4GALT, AAAS,
+AACS 
+> print("-----------------------------------------------")
+[1] "-----------------------------------------------"
+> pbmc.hashtag[['HTO']]
+Assay data with 8 features for 16916 cells
+First 8 features:
+ HTO-A, HTO-B, HTO-C, HTO-D, HTO-E, HTO-F, HTO-G, HTO-H 
+> 
+> print("-----------------------------------------------")
+[1] "-----------------------------------------------"
+> 
+> colnames(x = pbmc.hashtag[[]])
+ [1] "orig.ident"                "nCount_RNA"               
+ [3] "nFeature_RNA"              "nCount_HTO"               
+ [5] "nFeature_HTO"              "HTO_maxID"                
+ [7] "HTO_secondID"              "HTO_margin"               
+ [9] "HTO_classification"        "HTO_classification.global"
+[11] "hash.ID"                  
+> 
+> 
+> 
+> 
+> 
+> 
+> #seurat_output <- capture.output(HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile,  nstarts = argv$nstarts, nsamples = argv$nsamples)) 
+> #seurat_output
+> 
+> 
+> print("------------------- Percentage of largest gene ----------------------------")
+[1] "------------------- Percentage of largest gene ----------------------------"
+> pbmc.hashtag
+An object of class Seurat 
+27125 features across 16916 samples within 2 assays 
+Active assay: RNA (27117 features, 0 variable features)
+ 1 other assay present: HTO
+> 
+> #------------------Section 5 - Saving results ---------------------------"
+> 
+> create_files <- function(name,extension) {
++   path_complete <- paste(name,extension,sep="")
++   print(path_complete)
++   if (file.exists(path_complete)) {
++     print("The file already exists...")
++     return(-1)
++   } else {
++     print("Created new file with results")
++     file.create(path_complete)
++     return(path_complete)
++   }
++ }
+> 
+> 
+> #Save Results
+> print(argv$nameOutputFileHTO)
+[1] "resultHTO"
+> print("-------")
+[1] "-------"
+> file_results <-create_files(argv$nameOutputFileHTO,".csv")
+[1] "resultHTO.csv"
+[1] "Created new file with results"
+> write.csv(pbmc.hashtag$HTO_classification.global, file=file_results)
+> pbmc_file = paste(argv$nameOutputFileHTO,".rds",sep="")
+> saveRDS(pbmc.hashtag, file=pbmc_file)
+> 
+> 
+> 

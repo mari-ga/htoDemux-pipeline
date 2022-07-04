@@ -7,7 +7,7 @@ library(ggplot2)
 # Create a parser
 p <- arg_parser("Parameters for HTODemux")
 p <- add_argument(p, "--pbcmHashtagPath",help="S4 object saved from the first part of HTODemux", default = NULL)
-#p <- add_argument(p, "--graphs",help="Path to folder where the graphs produced from the HTODemux function can be saved", default = NULL)
+p <- add_argument(p, "--graphs",help="Path to folder where the graphs produced from the HTODemux function can be saved", default = NULL)
 p <- add_argument(p, "--assayName",help="Name of the Hashtag assay HTO by default",default="HTO")
 
 #Output graphs - Ridge Plot
@@ -60,22 +60,22 @@ if(argv$ridgePlot){
   plot<-RidgePlot(pbmc.hashtag, assay = argv$assayName, features = rownames(pbmc.hashtag[[argv$assayName]])[1:2], ncol = argv$ridgeNCol)
   png(paste("ridge.png",sep=""))
   print(plot)
-  dev.off()
+  #dev.off()
 }
 
 if(argv$featureScatter){
   plot2<- FeatureScatter(pbmc.hashtag, feature1 = argv$scatterFeat1 , feature2 = argv$scatterFeat2)
   png(paste("FeatureScatter.png",sep=""))
   print(plot2)
-  dev.off()
+  #dev.off()
 }
 
 if(argv$vlnplot){
   Idents(pbmc.hashtag) <- "HTO_classification.global"
-  plot3<-VlnPlot(pbmc.hashtag, features = pbmc.hashtag$nCount_RNA, pt.size = 0.1, log = TRUE)
+  plot3<-VlnPlot(pbmc.hashtag, features = "nCount_RNA", pt.size = 0.1, log = TRUE)
   png(paste("violinPlot.png",sep=""))
   print(plot3)
-  dev.off()
+  #dev.off()
 }
 
 
