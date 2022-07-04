@@ -1,8 +1,0 @@
-Attaching SeuratObject
-Attaching sp
-Picking joint bandwidth of 0.053
-Picking joint bandwidth of 0.0551
-Fehler in WhichCells.Seurat(object = x, cells = cells, idents = idents,  : 
-  Cannot find the following identities in the object: Negative
-Ruft auf: subset -> subset.Seurat -> WhichCells -> WhichCells.Seurat
-Ejecución interrumpida

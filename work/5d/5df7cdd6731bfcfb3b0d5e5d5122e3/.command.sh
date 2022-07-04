@@ -1,2 +1,0 @@
-#!/bin/bash -ue
-Rscript /Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/demultiplex-pipeline/R/HTODemux-visualisation.R --pbcmHashtagPath resultHTO.rds --assayName HTO --ridgePlot TRUE --ridgeNCol 2 --featureScatter TRUE --scatterFeat1 hto_HTO-A --scatterFeat2 hto_HTO-B --vlnplot FALSE --vlnFeatures NULL --vlnLog TRUE --tsne false --tseIdents Negative --tsneInvert FALSE --tsneVerbose FALSE --tsneApprox FALSE --tsneDimMax 1 --tsePerplexity 100 --heatmap FALSE --heatmapNcells 5000
