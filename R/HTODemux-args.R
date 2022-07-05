@@ -34,7 +34,7 @@ argv <- parse_args(p)
 #------------------ Loading Seurat object ---------------------
 
 pbmc.hashtag <-readRDS(argv$seuratObjectPath)
-str(pbmc.hashtag)
+
 
 
 print("------------------- Percentage of largest gene ----------------------------")

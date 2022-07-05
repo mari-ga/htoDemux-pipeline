@@ -22,7 +22,7 @@ process HASHED_DROPS_DEMUL{
 
     script:
         """ 
-            Rscript $baseDir/R/dropletUtils.R --fileUmi $umi_counts -fileHto $hto_matrix --nameOutputFileDrops $nameOutputFileDrops --nameOutputFileHashed $nameOutputFileHashed --ambient $ambient --minProp $minProp --pseudoCount $pseudoCount --constAmbient $constAmbient --doubletNmads $doubletNmads --doubletMin $doubletMin --confidenMin $confidenMin --confidentNmads $confidentNmads --combinations $combinations
+            Rscript $baseDir/R/dropletUtils.R --fileUmi $umi_counts --fileHto $hto_matrix --nameOutputFileDrops $nameOutputFileDrops --nameOutputFileHashed $nameOutputFileHashed --ambient $ambient --minProp $minProp --pseudoCount $pseudoCount --constAmbient $constAmbient --doubletNmads $doubletNmads --doubletMin $doubletMin --confidenMin $confidenMin --confidentNmads $confidentNmads --combinations $combinations
         """
 
 }

@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 #BiocManager::install("DropletUtils")
 
 
@@ -6,11 +7,11 @@ options(echo=TRUE)
 
 #Libraries
 library(Seurat)
-library(DropletUtils)
+library(DropletUtils, warn.conflicts = FALSE)
 library(argparser, quietly=TRUE)
 
 # Create a parser
-p <- arg_parser("Parameters for Seurat object")
+p <- arg_parser("Parameters for Hashed Drops Demultiplexing")
 
 #Parameters - section 1
 #Import files
@@ -32,15 +33,14 @@ p <- add_argument(p, "--constAmbient",help=" indicates whether a constant level 
 p <- add_argument(p, "--doubletNmads",help="Specifies the number of median absolute deviations (MADs) to use to identify doublets.", default = 3)
 p <- add_argument(p, "--doubletMin",help="Specifies the number of median absolute deviations (MADs) to use to identify doublets.", default = 2)
 p <- add_argument(p, "--confidenMin",help="Specifies the minimum threshold on the log-fold change to use to identify singlets.", default = 2)
-p <- add_argument(p, "--confidentNmads",help="Specifies the number of MADs to use to identify confidently assigned singlet3", default = 3)
+p <- add_argument(p, "--confidentNmads",help="Specifies the number of MADs to use to identify confidently assigned singlet", default = 3)
 
 p <- add_argument(p, "--combinations",help="Specifies valid combinations of HTOs", default = NULL)
-
- 
 
 argv <- parse_args(p)
 
 
+print(argv$ambient)
 #---------------- Section 1 - Input files -----------------
 pbmc.umis <-readRDS(argv$fileUmi)
 pbmc.htos <-readRDS(argv$fileHto)
