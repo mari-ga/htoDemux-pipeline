@@ -2,7 +2,7 @@
 
 process PREPROCESS{
     publishDir params.outdir, mode:'copy'
-    
+    label "seurat_process"
     input:
         path umi_counts
         path hto_matrix

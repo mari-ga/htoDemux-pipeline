@@ -1,6 +1,7 @@
 process HTO_VISUALISATION{
 
     publishDir path: "$projectDir/graphs", mode:'copy'
+    label "seurat_process"
     input:
     file result_object
     val assayName

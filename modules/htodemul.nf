@@ -1,5 +1,6 @@
 process HTODEMUL{
     publishDir params.outdir, mode:'copy'
+    label "seurat_process"
     input:
         file preprocess_object
         val quantile_hto
