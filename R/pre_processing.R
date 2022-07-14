@@ -51,9 +51,16 @@ pbmc.htos <-readRDS(argv$fileHto)
 hto <-readRDS(argv$fileHto)
 umi <-readRDS(argv$fileUmi)
 
+print("-----------------------------------------")
+#print(pbmc.htos)
+print("-----------------------------------------")
+#print(pbmc.umis)
+print("-----------------------------------------")
+
 #Identify which UMI corresponds to which hashtag.
 joint.bcs <- intersect(colnames(pbmc.umis), colnames(pbmc.htos))
 
+print(joint.bcs)
 # Subset RNA and HTO counts by joint cell barcodes
 pbmc.umis <- pbmc.umis[, joint.bcs]
 pbmc.htos <- as.matrix(pbmc.htos[, joint.bcs])
@@ -74,7 +81,7 @@ pbmc.hashtag[[argv$assayName]] <- CreateAssayObject(counts = pbmc.htos)
 pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod, margin=argv$margin)
 #pbmc.hashtag <- NormalizeData(pbmc.hashtag, assay = argv$assayName, normalization.method = argv$normalisationMethod)
 
-
+str(pbmc.hashtag)
 
 #------------------Section 5 - Save object for demultiplex ---------------------------
 

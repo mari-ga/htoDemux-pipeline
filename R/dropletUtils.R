@@ -63,7 +63,7 @@ hashed <- hashedDrops(pbmc.htos, ambient = NULL, min.prop = argv$minProp, consta
 
 #hashed <- hashedDrops(pbmc.umis,  ambient = NULL,min.prop = 0.05,constant.ambient = FALSE,)
 
-
+str(hashed)
 
 #------------------Section 3 - Saving results ---------------------------"
 
