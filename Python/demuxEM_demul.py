@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(description='Parser for DemuxEM - Demultiplexin
 parser.add_argument('--rna_data',  help='Input raw RNA expression matrix in 10x hdf5 format.')
 parser.add_argument('--hto_matrix',  help='HTO (antibody tag) count matrix in CSV format.')
 #output name
-parser.add_argument('--output',  help='Output name',default="demuxEm")
+#parser.add_argument('--output',  help='Output name',default="demuxEm")
 #Parameters
 parser.add_argument('--threads',  help='Number of threads',default=1)
 parser.add_argument('--alpha',  help='The Dirichlet prior concentration parameter (alpha) on samples.', default=0.0)

@@ -74,10 +74,20 @@ workflow{
   confidentNmads = Channel.from(params.confidentNmads)
   combinations = Channel.from(params.combinations)
 
+  //Params for DemuxEM
+  rna_data = Channel.from(params.rna_data)
+  hto_mat_em = Channel.from(params.hto_mat_em)
+  threads = Channel.from(params.threads)
+  alpha = Channel.from(params.alpha)
+  alpha_noise = Channel.from(params.alpha_noise)
+  min_signal = Channel.from(params.min_signal)
+  tol = Channel.from(params.tol)
+
 
   //incluir un if - seurat entra a todo el mambo
   SEURAT(umi,hto_matrix, sel_method, n_features, assay, a_name, margin,norm_method, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi, ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
 
   HASHED_DROPS(umi,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations)
 
+  //DEMUXEM(rna_data,hto_mat_em,min_signal,alpha,alpha_noise,tol,threads,)
 }

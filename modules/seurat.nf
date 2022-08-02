@@ -55,21 +55,20 @@ workflow SEURAT{
 
     main:
     PREPROCESS(umi_matrix, hto_matrix,sel_method, n_features,assay,a_name, margin, norm_method,out_file)
-    if( params.mode == 'multi' )
+
+    if
     {
        MULTISEQ(PREPROCESS.out, quantile_multi, autoThresh,  maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi )
    
     }
         
     else {
-        HTODEMUL(PREPROCESS.out,quantile_hto,kfunc,n_stars,n_samples,out_hto)
-        if(params.visualisationSeurat == 'TRUE')
-        {
-            HTO_VISUALISATION(HTODEMUL.out[0],a_name, ridgePlot,ridgeNCol,featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
-        }
-        
+        if ( params.htoMode == 'TRUE' ){
+            HTODEMUL(PREPROCESS.out,quantile_hto,kfunc,n_stars,n_samples,out_hto)
+            if(params.visualisationSeurat == 'TRUE')
+                {
+                    HTO_VISUALISATION(HTODEMUL.out[0],a_name, ridgePlot,ridgeNCol,featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
+                }
+            } 
     }
-        
-
-
 }
