@@ -20,3 +20,21 @@
 - UMI Matrix.rds File
 - Hashtag counts matrix  .rds File. (*)
 - Parameters for MULTI-seq
+
+### Hashed Drops
+#### Input
+- UMI Matrix.rds File
+- Parameters for Hashed Drops
+
+### DemuxEM
+#### Input
+- UMI Matrix hdf5 File
+- Hashtag counts matrix - 10x Folder path
+- Parameters for DemuxEM
+
+### Hash Solo
+#### Input
+- Hashtag counts matrix - 10x Folder path
+- Parameters for Hash Solo
+
+
