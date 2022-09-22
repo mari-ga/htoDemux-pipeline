@@ -2,8 +2,8 @@ process HASHED_DROPS_DEMUL{
     publishDir params.outdir, mode:'copy'
     
     input:
-        path umi_counts
-        path hto_matrix
+        val umi_counts
+        val hto_matrix
         val nameOutputFileDrops
         val nameOutputFileHashed
         val ambient

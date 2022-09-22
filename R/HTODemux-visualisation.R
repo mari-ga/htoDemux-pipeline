@@ -1,11 +1,11 @@
-#------------- HTO Demux - 2nd Part - Visualisation ------------
+#------------- Seurat - Visualisation ------------
 library(argparser, quietly=TRUE)
 library(Seurat)
 library(ggplot2)
 
 
 # Create a parser
-p <- arg_parser("Parameters for HTODemux")
+p <- arg_parser("Parameters for Seurat Visualisation")
 p <- add_argument(p, "--pbcmHashtagPath",help="S4 object saved from the first part of HTODemux", default = NULL)
 p <- add_argument(p, "--graphs",help="Path to folder where the graphs produced from the HTODemux function can be saved", default = NULL)
 p <- add_argument(p, "--assayName",help="Name of the Hashtag assay HTO by default",default="HTO")

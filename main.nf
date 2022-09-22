@@ -8,16 +8,21 @@ log.info """\
 
  UMI-Counts: ${params.umi_count}
  HTO-Matrix: ${params.hto_mat}
+
  """
 
 include { SEURAT } from './modules/seurat'
 include { HASHED_DROPS } from './modules/hashed_drops'
+include { DEMUXEM_DEMUL } from './modules/demuxem_demul'
+include { HASH_SOLO_DEMUL } from './modules/hash_solo_demul'
+include { SOLO_DEMUL } from './modules/solo_demul'
 
 workflow{
   //Params for pre-processing
   umi = Channel.fromPath(params.umi_count, checkIfExists: true )
   hto_matrix =  Channel.fromPath(params.hto_mat, checkIfExists: true )
   sel_method = Channel.from(params.selection_method)
+  ndelim = Channel.from(params.ndelim)
   n_features = Channel.from(params.number_features)
   assay = Channel.from(params.assay)
   a_name = Channel.from(params.assayName)
@@ -30,6 +35,8 @@ workflow{
   kfunc = Channel.from(params.kfunc)
   n_stars = Channel.from(params.nstarts)
   n_samples = Channel.from(params.nsamples)
+  seed = Channel.from(params.seed)
+  init = Channel.from(params.init)
   out_hto = Channel.from(params.nameOutputFileHTO)
 
   //Params for MULTI-seq
@@ -73,21 +80,54 @@ workflow{
   confidenMin = Channel.from(params.confidenMin)
   confidentNmads = Channel.from(params.confidentNmads)
   combinations = Channel.from(params.combinations)
+  histogram = Channel.from(params.histogram)
+  plotLog = Channel.from(params.plotLog)
+
 
   //Params for DemuxEM
   rna_data = Channel.from(params.rna_data)
-  hto_mat_em = Channel.from(params.hto_mat_em)
-  threads = Channel.from(params.threads)
+  hto_data = Channel.from(params.hto_data)
   alpha = Channel.from(params.alpha)
   alpha_noise = Channel.from(params.alpha_noise)
-  min_signal = Channel.from(params.min_signal)
   tol = Channel.from(params.tol)
+  n_threads = Channel.from(params.n_threads)
+  min_signal = Channel.from(params.min_signal)
+  output_demux = Channel.from(params.output_demux)
+  
+
+  //Params for Hash Solo
+  //using hto_data variable from DemuxEM
+  priors = Channel.from(params.priors)
+  output_file = Channel.from(params.output_file)
+  output_plot = Channel.from(params.output_plot)
+
+  //params for Solo
+  soft = Channel.from(params.soft)
+  max_epochs = Channel.from(params.max_epochs)
+  lr = Channel.from(params.lr)
+  output_solo = Channel.from(params.output_solo)
 
 
-  //incluir un if - seurat entra a todo el mambo
-  SEURAT(umi,hto_matrix, sel_method, n_features, assay, a_name, margin,norm_method, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi, ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
-
-  HASHED_DROPS(umi,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations)
-
-  //DEMUXEM(rna_data,hto_mat_em,min_signal,alpha,alpha_noise,tol,threads,)
+if(params.seurat == 'TRUE'){
+  SEURAT(umi,hto_matrix, sel_method,ndelim, n_features, assay, a_name, margin,norm_method,seed, init, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi, ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
 }
+
+if(params.hashedMode == 'TRUE'){
+  HASHED_DROPS(umi,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations,histogram,plotLog)
+}
+
+if(params.demuxem_mode == 'TRUE'){
+  DEMUXEM_DEMUL(rna_data,hto_data,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
+  //min_signal,alpha,alpha_noise,tol,threads,output_demux,plot_demul
+}
+
+if(params.hash_solo_mode == 'TRUE'){
+  HASH_SOLO_DEMUL(hto_data,priors,output_file,output_plot)
+}
+
+//if(params.solo_mode == 'TRUE'){
+  //SOLO_DEMUL(rna_data,soft,max_epochs,lr,output_solo)
+//}
+}
+
+//params.outdir = '/home/icb/mariana.gonzales/pipeline/demultiplex-pipeline/results/'

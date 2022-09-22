@@ -4,19 +4,23 @@ params.outdir = 'results'
 
 include { PREPROCESS } from './preprocess'
 include { HTODEMUL } from './htodemul'
-include { MULTISEQ } from './multiseq'
 include { HTO_VISUALISATION } from './hto_visualisation'
+include { MULTI_SEQ } from './multi_complete'
+
 
 workflow SEURAT{
     take:
         umi_matrix
         hto_matrix
         sel_method
+        ndelim
         n_features
         assay 
         a_name 
         margin 
         norm_method 
+        seed
+        init
         out_file
 
         quantile_hto
@@ -54,21 +58,22 @@ workflow SEURAT{
 
 
     main:
-    PREPROCESS(umi_matrix, hto_matrix,sel_method, n_features,assay,a_name, margin, norm_method,out_file)
+    PREPROCESS(umi_matrix, hto_matrix,ndelim,sel_method, n_features,assay,a_name, margin, norm_method,out_file)
 
-    if
-    {
-       MULTISEQ(PREPROCESS.out, quantile_multi, autoThresh,  maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi )
-   
-    }
+  
+      
+    HTODEMUL(PREPROCESS.out,quantile_hto,kfunc,n_stars,n_samples,seed, init,out_hto)
+
+    
+    if(params.visualisationSeurat == 'TRUE')
+      {
+        HTO_VISUALISATION(HTODEMUL.out[0],a_name, ridgePlot,ridgeNCol,featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
+      }
+
+    MULTI_SEQ(umi_matrix, hto_matrix,ndelim,sel_method, n_features,assay,a_name, margin, norm_method,quantile_multi, autoThresh,  maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi)
+    
         
-    else {
-        if ( params.htoMode == 'TRUE' ){
-            HTODEMUL(PREPROCESS.out,quantile_hto,kfunc,n_stars,n_samples,out_hto)
-            if(params.visualisationSeurat == 'TRUE')
-                {
-                    HTO_VISUALISATION(HTODEMUL.out[0],a_name, ridgePlot,ridgeNCol,featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
-                }
-            } 
-    }
+  
+
+    
 }

@@ -23,6 +23,8 @@ p <- add_argument(p, "--quantile",help="Positive quantile per default: 0.99", ty
 p <- add_argument(p, "--kfunc",help="Cluster function choose between: Clara - kmeans",default=NULL)
 p <- add_argument(p, "--nstarts",help="number of starts for demultiplex", type="numeric",default=100)
 p <- add_argument(p, "--nsamples",help="number of samples for demultiplex", type="numeric",default=100)
+p <- add_argument(p, "--seed",help="sets random seed", type="numeric",default=42)
+p <- add_argument(p, "--init",help="Initial number of clusters for hashtags")
 
 #Output paths
 #p <- add_argument(p, "--htoDemuxOutPath",help="Path to file where the results of htoDemux will be saved", default = NULL)
@@ -69,7 +71,8 @@ print("------------------- Percentage of largest gene --------------------------
 
 print(argv$kfunc)
 #pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile,  nstarts = argv$nstarts, nsamples = argv$nsamples)
-pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = "HTO", positive.quantile = 0.99)
+
+pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = "HTO", positive.quantile = argv$quantile,nstarts =argv$nstarts, kfunc = argv$kfunc)
 
 # Global classification results
 table(pbmc.hashtag$HTO_classification.global)
@@ -77,10 +80,6 @@ table(pbmc.hashtag$HTO_classification.global)
 
 table(pbmc.hashtag$HTO_classification)
 
-print("-----------------------------------------------")
-
-pbmc.hashtag
-print("-----------------------------------------------")
 
 dim(x = pbmc.hashtag)
 print("-----------------------------------------------")
@@ -133,6 +132,8 @@ create_files <- function(name,extension) {
 print(argv$nameOutputFileHTO)
 print("-------")
 file_results <-create_files(argv$nameOutputFileHTO,".csv")
+file_results_2 <-create_files("classification_hash",".csv")
+write.csv(pbmc.hashtag$HTO_classification, file=file_results_2)
 write.csv(pbmc.hashtag$HTO_classification.global, file=file_results)
 pbmc_file = paste(argv$nameOutputFileHTO,".rds",sep="")
 saveRDS(pbmc.hashtag, file=pbmc_file)

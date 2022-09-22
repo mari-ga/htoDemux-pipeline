@@ -6,10 +6,10 @@ library(Seurat)
 library(Matrix)
 library(ggpubr)
 library(gplots)
-library(argparser, quietly=TRUE)
 
 
 data_dir_umi <- '/home/icb/mariana.gonzales/storage/MS_nuclei_hashing/747495_GX12/outs/filtered_feature_bc_matrix'
+
 list.files(data_dir_umi) # Should show barcodes.tsv, genes.tsv, and matrix.mtx
 umi <- Read10X(data.dir = data_dir_umi)
 seurat_object = CreateSeuratObject(counts = umi)

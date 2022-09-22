@@ -1,4 +1,4 @@
-name: demul
+name: solo_env
 channels:
   - defaults
   - anaconda
@@ -6,11 +6,12 @@ channels:
   - conda-forge
 dependencies:
   - defaults::python=3.9
-  - r-seurat
-  - r-base=4.1.3
   - nextflow=22.04.0
   - pip
   - pip:
-    - pegasuspy
+    - scvi-tools
+    - scanpy 
+    - anndata 
     - argparse
+    - pandas
 

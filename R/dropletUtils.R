@@ -42,24 +42,36 @@ argv <- parse_args(p)
 
 print(argv$ambient)
 #---------------- Section 1 - Input files -----------------
-pbmc.umis <-readRDS(argv$fileUmi)
-pbmc.htos <-readRDS(argv$fileHto)
+# pbmc.umis <-readRDS(argv$fileUmi)
+# pbmc.htos <-readRDS(argv$fileHto)
+
+# #Identify which UMI corresponds to which hashtag.
+# joint.bcs <- intersect(colnames(pbmc.umis), colnames(pbmc.htos))
+
+# # Subset RNA and HTO counts by joint cell barcodes
+# pbmc.umis <- pbmc.umis[, joint.bcs]
+# pbmc.htos <- as.matrix(pbmc.htos[, joint.bcs])
+
+# # Confirm that the HTO have the correct names
+# rownames(pbmc.htos)
+# print(argv$ambient)
+
+
+umi <- Read10X(data.dir = argv$fileUmi)
+counts <- Read10X(data.dir = argv$fileHto)
+
 
 #Identify which UMI corresponds to which hashtag.
-joint.bcs <- intersect(colnames(pbmc.umis), colnames(pbmc.htos))
+joint.bcs <- intersect(colnames(umi), colnames(counts))
 
 # Subset RNA and HTO counts by joint cell barcodes
-pbmc.umis <- pbmc.umis[, joint.bcs]
-pbmc.htos <- as.matrix(pbmc.htos[, joint.bcs])
-
-# Confirm that the HTO have the correct names
-rownames(pbmc.htos)
-print(argv$ambient)
+umi<- umi[, joint.bcs]
+counts <- counts[, joint.bcs]
 
 #---------------- Section 2 - Demultiplexing -----------------
 #hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, pseudo.count=argv$pseudoCount, constant.ambient = argv$constAmbient, doublet.nmads=argv$doubletNmads, confident.min=argv$confidenMin ,combinations=argv$combinations,confident.nmads=argv$confidentNmads,doublet.min=arg$doubletMin)
 #hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, constant.ambient = argv$constAmbient)
-hashed <- hashedDrops(pbmc.htos, ambient = NULL, min.prop = argv$minProp, constant.ambient = argv$constAmbient,doublet.nmads=argv$doubletNmads)
+hashed <- hashedDrops(counts, ambient = NULL, min.prop = argv$minProp, constant.ambient = argv$constAmbient,doublet.nmads=argv$doubletNmads)
 
 #hashed <- hashedDrops(pbmc.umis,  ambient = NULL,min.prop = 0.05,constant.ambient = FALSE,)
 

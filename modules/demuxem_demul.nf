@@ -1,21 +1,24 @@
-process DEMUXEM_DEMUL{
-    publishDir params.outdir, mode:'copy'
-    label "demuxem"
-    input:
-        path rna_data
-        path hto_mat_em
-        val threads
-        val alpha
-        val alpha_noise
-        val min_signal
-        val tol
+params.outdir = 'results'
 
-    output:
-        file 'data.obs'
+include { DEMUXEM } from './demuxem'
 
-    script:
-    """
-        python $baseDir/Python/demuxEM_demul.py --rna_data $rna_data --hto_matrix $hto_mat_em --threads $threads --alpha $alpha --alpha_noise $alpha_noise --min_signal $min_signal --tol $tol
-    """
+workflow DEMUXEM_DEMUL{
+    take:
+        rna_data
+        hto_data
+        alpha
+        alpha_noise
+        tol
+        n_threads
+        min_signal
+        output_demux
+
+
+    main:
+        if(params.demuxem_mode == "TRUE")
+        {
+           DEMUXEM(rna_data,hto_data,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
+           
+        }
 
 }

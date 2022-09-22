@@ -1,35 +1,45 @@
-from ast import arg
-import string
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import h5py
 import pegasusio as io
 from demuxEM.tools import *
-import pegasus
-from collections import defaultdict
+import pegasus as pg
 import argparse
-
+import multiprocessing
+from multiprocessing import freeze_support
 
 parser = argparse.ArgumentParser(description='Parser for DemuxEM - Demultiplexing ')
 #Input files
+#H5 Available
 parser.add_argument('--rna_data',  help='Input raw RNA expression matrix in 10x hdf5 format.')
-parser.add_argument('--hto_matrix',  help='HTO (antibody tag) count matrix in CSV format.')
+#Working good with 10x mtx
+parser.add_argument('--hto_matrix',  help='HTO (antibody tag) count matrix in mtx format.')
 #output name
-#parser.add_argument('--output',  help='Output name',default="demuxEm")
-#Parameters
-parser.add_argument('--threads',  help='Number of threads',default=1)
-parser.add_argument('--alpha',  help='The Dirichlet prior concentration parameter (alpha) on samples.', default=0.0)
-parser.add_argument('--alpha_noise',  help='The Dirichlet prior concentration parameter (alpha) on samples.', default=1.0)
-parser.add_argument('--min_signal',  help='Any cell/nucleus with less than <count> hashtags from the signal will be marked as unknown.', default=10.0)
-parser.add_argument('--tol',  help='Threshold used for the EM convergence..', default=1e-6)
+parser.add_argument('--alpha',  help='The Dirichlet prior concentration parameter (alpha) on samples.', type=float, default=0.0)
+parser.add_argument('--alpha_noise',  help='The Dirichlet prior concenration parameter on the background noise',type=float, default=1.0)
+parser.add_argument('--tol',  help='Threshold used for the EM convergence',type=float, default=1e-6)
+parser.add_argument('--n_threads',  help='Number of threads to use.',type=int, default=1)
+parser.add_argument('--min_signal',  help='Any cell/nucleus with less than min_signal hashtags from the signal will be marked as Negative.',type=float, default=10.0)
+
+parser.add_argument('--output',  help='Output name',default="demuxEm.csv")
+
 #Files - plots
 
 args = parser.parse_args()
 
+umi_mat = args.rna_data
+hto_mat = args.hto_matrix
+alpha_val = args.alpha
+alpha_noise_val = args.alpha_noise
 
-rna_matrix = args.rna_data
-hto_matrix = args.hto_matrix
 
-pegasus.demultiplex(rna_matrix,hto_matrix,min_signal=args.min_signal, alpha=args.alpha,alpha_noise=args.alpha_noise,tol=args.tol,n_threads= args.threads )
+#The input is read with 2 libraries, only pegasus and pegasus io for the mtx
+#Anyways, both matrices are transformed to multimodal
+hto_data = io.read_input(hto_mat)
+umi_data = pg.read_input(input_file=umi_mat)
+if __name__ == '__main__':
+    multiprocessing.freeze_support()
+    pg.qc_metrics(umi_data)
+    pg.identify_robust_genes(umi_data)
+    pg.estimate_background_probs(hto_data)
+    pg.demultiplex(umi_data, hto_data,alpha=alpha_val, alpha_noise=alpha_noise_val)
+    umi_data.obs.to_csv(args.output)
+    
 

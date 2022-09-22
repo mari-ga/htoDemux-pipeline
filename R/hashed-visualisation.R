@@ -31,14 +31,13 @@ print(plot1)
 # Most cells should be singlets with low second log-fold changes.
 if(argv$plotLog){
 plot2 <- hist(hashed$LogFC2, breaks=50)
-png(paste("hist_hashed.png",sep=""))
+png(paste("histo_hashed.png",sep=""))
 print(plot2)
-dev.off()
 }
 # Identify confident singlets or doublets at the given threshold.
-summary(hashed$Confident)
-summary(hashed$Doublet)
+#summary(hashed$Confident)
+#summary(hashed$Doublet)
 
 # Checking against the known truth, in this case
 # 'Best' contains the putative sample of origin.
-table(hashed$Best, true.sample) 
+#table(hashed$Best, true.sample) 

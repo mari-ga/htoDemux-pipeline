@@ -4,8 +4,9 @@ process PREPROCESS{
     publishDir params.outdir, mode:'copy'
     label "seurat_process"
     input:
-        path umi_counts
-        path hto_matrix
+        val umi_counts
+        val hto_matrix
+        val ndelim
         val selection_method
         val number_features
         val assay
@@ -18,7 +19,7 @@ process PREPROCESS{
 
     script:
     """
-        Rscript $baseDir/R/pre_processing.R --fileUmi $umi_counts --fileHto $hto_matrix --selectMethod $selection_method --numberFeatures $number_features --assay $assay --assayName $assayName --margin $margin --normalisationMethod $normalisation_method --nameOutputFile $nameOutputFile
+        Rscript $baseDir/R/pre_processing.R --fileUmi $umi_counts --fileHto $hto_matrix --ndelim $ndelim --selectMethod $selection_method --numberFeatures $number_features --assay $assay --assayName $assayName --margin $margin --normalisationMethod $normalisation_method --nameOutputFile $nameOutputFile
     """
 
 

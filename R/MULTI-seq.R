@@ -17,8 +17,8 @@ p <- add_argument(p, "--seuratObjectPath",help="seurat object ready for demultip
 
 
 #parameters - section 4
-p <- add_argument(p, "--quantile",help="Positive quantile per default: 0.7", type="numeric",default=0.7)
-p <- add_argument(p, "--autoThresh",help="Whether to perform automated threshold finding to define the best quantile, per Default=False",default=TRUE)
+p <- add_argument(p, "--quantile_multi",help="Positive quantile per default: 0.7", type="numeric",default=0.7)
+p <- add_argument(p, "--autoThresh",help="Whether to perform automated threshold finding to define the best quantile, per Default=False",default=FALSE)
 p <- add_argument(p, "--maxiter",help="Maximum number of iterations", type="numeric",default=5)
 p <- add_argument(p, "--qrangeFrom",help="A range of possible quantile values to try if autoThresh is TRUE",type="numeric", default = 0.1)
 p <- add_argument(p, "--qrangeTo",help="A range of possible quantile values to try if autoThresh is TRUE",type="numeric", default = 0.9)
@@ -39,7 +39,8 @@ str(pbmc.hashtag)
 
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
 
-pbmc.hashtag <- MULTIseqDemux(pbmc.hashtag, assay = argv$assayName,  quantile = args$quantile, autoThresh = TRUE , qrange=seq(from = argv$qrangeFrom, to =argv$qrangeTo, by=argv$qrangeBy), verbose=argv$verbose)
+pbmc.hashtag <- MULTIseqDemux(pbmc.hashtag, assay = argv$assayName,  quantile = args$quantile_multi, autoThresh = TRUE , qrange=seq(from = argv$qrangeFrom, to =argv$qrangeTo, by=argv$qrangeBy), verbose=argv$verbose)
+
 #pbmc.hashtag <- MULTIseqDemux(pbmc.hashtag,assay = "HTO",quantile = 0.7, autoThresh = FALSE,maxiter = 5,qrange = seq(from = 0.1, to = 0.9, by = 0.05),verbose = TRUE)
 
 
@@ -98,3 +99,4 @@ write.csv(pbmc.hashtag$MULTI_ID, file=file_results)
 pbmc_file = paste(argv$nameOutputFileMulti,".rds",sep="")
 print(pbmc_file)
 saveRDS(pbmc.hashtag, file=pbmc_file)
+
