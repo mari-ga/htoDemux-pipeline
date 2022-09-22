@@ -13,7 +13,7 @@ workflow SOLO_DEMUL{
 
 
     main:
-        if(params.demuxem_mode == "TRUE")
+        if(params.solo_mode == "TRUE")
         {
            SOLO(rna_data,soft,max_epochs,lr,output_solo)
            

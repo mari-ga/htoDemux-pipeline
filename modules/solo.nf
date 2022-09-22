@@ -2,7 +2,7 @@ process SOLO{
     publishDir params.outdir, mode:'copy'
     label "solo"
     input:
-        val rna_data 
+        val rna_file
         val soft
         val max_epochs
         val lr 
@@ -14,7 +14,7 @@ process SOLO{
     script:
 
         """
-          python $baseDir/Python/solo.py --rna_data $rna_data --soft $soft --max_epochs $max_epochs --lr $lr --output $output_demux
+          python $baseDir/Python/solo_demul.py --rna_file $rna_data --soft $soft --max_epochs $max_epochs --lr $lr --output $output_sol
         """
 
 }
