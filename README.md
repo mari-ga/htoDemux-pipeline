@@ -4,9 +4,9 @@
 
 - **main.df:** Contains Nextflow script, which calls the processes
 - **nextflow.config:** Default parameters for the pipeline
-- **HTODemux.R:** HTODemux algorithm 
-- **HTODemux-visualisation.R:** HTODemux graphs
-- **multi-seq.R:** HTODemux algorithm 
+- **Folder with R tools ** Implementations
+- **Folder with Python tools ** Implementations
+- **Folder Modules ** Nextflow modules
 
 ### HTODemux 
 #### Input
