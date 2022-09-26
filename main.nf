@@ -16,6 +16,7 @@ include { HASHED_DROPS } from './modules/hashed_drops'
 include { DEMUXEM_DEMUL } from './modules/demuxem_demul'
 include { HASH_SOLO_DEMUL } from './modules/hash_solo_demul'
 include { SOLO_DEMUL } from './modules/solo_demul'
+include { ASSIGNMENT_WORKFLOW } from './modules/assignment_flow.nf'
 
 workflow{
   //Params for pre-processing
@@ -82,7 +83,10 @@ workflow{
   combinations = Channel.from(params.combinations)
   histogram = Channel.from(params.histogram)
   plotLog = Channel.from(params.plotLog)
-
+  empty = Channel.from(params.empty)
+  lower = Channel.from(params.lower)
+  testAmbient = Channel.from(params.testAmbient)
+  nameOutputEmpty = Channel.from(params.nameOutputEmpty)
 
   //Params for DemuxEM
   rna_data = Channel.from(params.rna_data)
@@ -113,21 +117,27 @@ if(params.seurat == 'TRUE'){
 }
 
 if(params.hashedMode == 'TRUE'){
-  HASHED_DROPS(umi,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations,histogram,plotLog)
+  HASHED_DROPS(umi,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations,histogram,plotLog,empty,lower,testAmbient,nameOutputEmpty)
 }
 
 if(params.demuxem_mode == 'TRUE'){
   DEMUXEM_DEMUL(rna_data,hto_data,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
-  //min_signal,alpha,alpha_noise,tol,threads,output_demux,plot_demul
 }
 
 if(params.hash_solo_mode == 'TRUE'){
   HASH_SOLO_DEMUL(hto_data,priors,output_file,output_plot)
 }
 
-//if(params.solo_mode == 'TRUE'){
-  //SOLO_DEMUL(rna_data,soft,max_epochs,lr,output_solo)
-//}
+if(params.solo_mode == 'TRUE'){
+  SOLO_DEMUL(umi,soft,max_epochs,lr,output_solo)
 }
+
+
+if(params.general_assignment == 'TRUE'){
+  ASSIGNMENT_WORKFLOW(SEURAT.out[1],SEURAT.out[7],HASHED_DROPS.out[0],DEMUXEM_DEMUL.out,HASH_SOLO_DEMUL.out[0])
+}
+
+}
+
 
 //params.outdir = '/home/icb/mariana.gonzales/pipeline/demultiplex-pipeline/results/'

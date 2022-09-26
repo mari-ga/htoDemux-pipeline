@@ -34,8 +34,14 @@ p <- add_argument(p, "--doubletNmads",help="Specifies the number of median absol
 p <- add_argument(p, "--doubletMin",help="Specifies the number of median absolute deviations (MADs) to use to identify doublets.", default = 2)
 p <- add_argument(p, "--confidenMin",help="Specifies the minimum threshold on the log-fold change to use to identify singlets.", default = 2)
 p <- add_argument(p, "--confidentNmads",help="Specifies the number of MADs to use to identify confidently assigned singlet", default = 3)
-
 p <- add_argument(p, "--combinations",help="Specifies valid combinations of HTOs", default = NULL)
+
+p <- add_argument(p, "--empty",help="True only if the data provided is RAW", default = FALSE)
+p <- add_argument(p, "--lower",help=" numeric scalar specifying the lower bound on the total UMI count, at or below which all barcodes are assumed to correspond to empty droplets.", default = 100)
+p <- add_argument(p, "--testAmbient",help=" logical scalar indicating whether results should be returned for barcodes with totals less than or equal to lower", default = FALSE)
+p <- add_argument(p, "--nameOutputEmpty",help="Name for the empty droplets file", default = "emptyDropletsHashed")
+
+
 
 argv <- parse_args(p)
 
@@ -68,14 +74,14 @@ joint.bcs <- intersect(colnames(umi), colnames(counts))
 umi<- umi[, joint.bcs]
 counts <- counts[, joint.bcs]
 
+
+if(argv$empty){
+emptyHashed <- testEmptyDrops(counts)
+}
 #---------------- Section 2 - Demultiplexing -----------------
 #hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, pseudo.count=argv$pseudoCount, constant.ambient = argv$constAmbient, doublet.nmads=argv$doubletNmads, confident.min=argv$confidenMin ,combinations=argv$combinations,confident.nmads=argv$confidentNmads,doublet.min=arg$doubletMin)
 #hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, constant.ambient = argv$constAmbient)
-hashed <- hashedDrops(counts, ambient = NULL, min.prop = argv$minProp, constant.ambient = argv$constAmbient,doublet.nmads=argv$doubletNmads)
-
-#hashed <- hashedDrops(pbmc.umis,  ambient = NULL,min.prop = 0.05,constant.ambient = FALSE,)
-
-str(hashed)
+hashed <- hashedDrops(counts, ambient = NULL, min.prop = argv$minProp, constant.ambient = argv$constAmbient,doublet.nmads=argv$doubletNmads,confident.min=argv$confidenMin,confident.nmads=argv$confidentNmads,doublet.min=argv$doubletMin)
 
 #------------------Section 3 - Saving results ---------------------------"
 
@@ -93,7 +99,12 @@ create_files <- function(name,extension) {
 }
 
 file_results <-create_files(argv$nameOutputFileDrops,".csv")
+empty_results <-create_files(argv$nameOutputEmpty,".csv")
 write.csv(hashed, file=file_results)
+if(argv$empty)
+{
+  write.csv(emptyHashed, file=empty_results)
+}
 pbmc_file = paste(argv$nameOutputFileHashed,".rds",sep="")
 print(pbmc_file)
 saveRDS(hashed, file=pbmc_file)

@@ -28,6 +28,9 @@ umi_mat = args.rna_data
 hto_mat = args.hto_matrix
 alpha_val = args.alpha
 alpha_noise_val = args.alpha_noise
+min_signal_val = args.min_signal
+tol_val = args.tol
+n_threads_val = args.n_threads
 
 
 #The input is read with 2 libraries, only pegasus and pegasus io for the mtx
@@ -39,7 +42,7 @@ if __name__ == '__main__':
     pg.qc_metrics(umi_data)
     pg.identify_robust_genes(umi_data)
     pg.estimate_background_probs(hto_data)
-    pg.demultiplex(umi_data, hto_data,alpha=alpha_val, alpha_noise=alpha_noise_val)
+    pg.demultiplex(umi_data, hto_data,alpha=alpha_val, alpha_noise=alpha_noise_val,min_signal=min_signal_val,tol=tol_val,n_threads=n_threads_val)
     umi_data.obs.to_csv(args.output)
     
 
