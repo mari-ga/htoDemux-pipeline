@@ -20,5 +20,8 @@ workflow DEMUXEM_DEMUL{
            DEMUXEM(rna_data,hto_data,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
            
         }
+    emit:
+        DEMUXEM.out
+
 
 }

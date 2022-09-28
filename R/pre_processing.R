@@ -48,6 +48,7 @@ counts <- Read10X(data.dir = argv$fileHto)
 
 #Identify which UMI corresponds to which hashtag.
 joint.bcs <- intersect(colnames(umi), colnames(counts))
+print(joint.bcs)
 
 
 umi<- umi[, joint.bcs]

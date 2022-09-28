@@ -39,6 +39,9 @@ workflow HASHED_DROPS{
            }
 
         }
+    
+    emit:
+        HASHED_DROPS_DEMUL.out
 
 
 

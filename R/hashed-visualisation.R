@@ -20,7 +20,7 @@ p <- add_argument(p, "--plotLog",help="Plot Log 2 FC", default = TRUE)
 argv <- parse_args(p)
 
 hashed <-readRDS(argv$hashedObjectPath)
-
+str(hashed)
 # Doublets show up in the top-left, singlets in the bottom right.
 if(argv$histogram){
 plot1 <- plot(hashed$LogFC, hashed$LogFC2)

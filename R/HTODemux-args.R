@@ -69,7 +69,7 @@ print("------------------- Percentage of largest gene --------------------------
 
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------
 
-print(argv$kfunc)
+
 #pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = argv$assayName, positive.quantile = argv$quantile,  nstarts = argv$nstarts, nsamples = argv$nsamples)
 
 pbmc.hashtag <- HTODemux(pbmc.hashtag, assay = "HTO", positive.quantile = argv$quantile,nstarts =argv$nstarts, kfunc = argv$kfunc)

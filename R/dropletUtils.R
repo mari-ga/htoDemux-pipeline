@@ -16,7 +16,7 @@ p <- arg_parser("Parameters for Hashed Drops Demultiplexing")
 #Parameters - section 1
 #Import files
 
-p <- add_argument(p, "--fileUmi",help="Path to file UMI count matrix")
+#p <- add_argument(p, "--fileUmi",help="Path to file UMI count matrix")
 p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 
 
@@ -63,17 +63,21 @@ print(argv$ambient)
 # print(argv$ambient)
 
 
-umi <- Read10X(data.dir = argv$fileUmi)
+#umi <- Read10X(data.dir = argv$fileUmi)
 counts <- Read10X(data.dir = argv$fileHto)
 
 
 #Identify which UMI corresponds to which hashtag.
-joint.bcs <- intersect(colnames(umi), colnames(counts))
+#joint.bcs <- intersect(colnames(umi), colnames(counts))
 
 # Subset RNA and HTO counts by joint cell barcodes
-umi<- umi[, joint.bcs]
-counts <- counts[, joint.bcs]
+#umi<- umi[, joint.bcs]
+#counts mean HTO (just in case)
+#counts <- counts[, joint.bcs]
 
+print(counts)
+print("----------------------------------")
+str(counts)
 
 if(argv$empty){
 emptyHashed <- testEmptyDrops(counts)

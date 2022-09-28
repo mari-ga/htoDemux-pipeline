@@ -12,6 +12,7 @@ parser.add_argument('--multiseq_results',  help='CSV file with classification re
 parser.add_argument('--hashed_drop_results',  help='CSV file with classification results from Hashed Drop',default="-")
 parser.add_argument('--demuxem_results',  help='CSV file with classification results from DemuxEM',default="-")
 parser.add_argument('--hashsolo_results',  help='CSV file with classification results from Hash Solo',default="-")
+parser.add_argument('--solo_results',  help='CSV file with prediction results from Solo',default="-")
 
 parser.add_argument('--output_assignment',  help='name for the output file',default="general_assignment.csv")
 
@@ -103,6 +104,25 @@ if(args.hashed_drop_results != "-"):
         del hasheddrops_hashes["Barcode_hashed"]
         total_classification["Assignment-hashed"] = hasheddrops_hashes
 
+
+if(args.solo_results != "-"): 
+    solo_results = pd.read_csv(args.solo_results)
+    if(args.hashsolo_results == "-" and args.demuxem_results == "-" and args.multiseq_results  == "-" and args.multiseq_results== "-" and args.hasheddrops_hashes == "-"):
+        if solo_results.shape[1] == 2:
+            solo_results.columns = ["Barcode", "Prediction"]
+            total_classification = pd.concat([total_classification,solo_results],axis=1)
+        else:
+            solo_results.columns = ["Barcode","Doublet", "Singlet"]
+            total_classification = pd.concat([total_classification,solo_results],axis=1)
+    else:
+        if solo_results.shape[1] == 2:
+            del solo_results["Barcode"]
+            total_classification["Assignment-hashed"] = hasheddrops_hashes
+        else:
+            total_classification["Doublets"] = hasheddrops_hashes["Doublet"]
+            total_classification["Singlets"] = hasheddrops_hashes["Singlet"]
+        
+   
 
 
 total_classification.to_csv("general_assignment.csv")

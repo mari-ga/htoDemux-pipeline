@@ -90,7 +90,7 @@ workflow{
 
   //Params for DemuxEM
   rna_data = Channel.from(params.rna_data)
-  hto_data = Channel.from(params.hto_data)
+  hto_raw = Channel.from(params.hto_raw)
   alpha = Channel.from(params.alpha)
   alpha_noise = Channel.from(params.alpha_noise)
   tol = Channel.from(params.tol)
@@ -100,7 +100,7 @@ workflow{
   
 
   //Params for Hash Solo
-  //using hto_data variable from DemuxEM
+  hto_data = Channel.from(params.hto_data)
   priors = Channel.from(params.priors)
   output_file = Channel.from(params.output_file)
   output_plot = Channel.from(params.output_plot)
@@ -113,28 +113,28 @@ workflow{
 
 
 if(params.seurat == 'TRUE'){
-  SEURAT(umi,hto_matrix, sel_method,ndelim, n_features, assay, a_name, margin,norm_method,seed, init, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi, ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
+  seurat = SEURAT(umi,hto_matrix, sel_method,ndelim, n_features, assay, a_name, margin,norm_method,seed, init, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi, ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
 }
 
 if(params.hashedMode == 'TRUE'){
-  HASHED_DROPS(umi,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations,histogram,plotLog,empty,lower,testAmbient,nameOutputEmpty)
+  hashed = HASHED_DROPS(umi,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations,histogram,plotLog,empty,lower,testAmbient,nameOutputEmpty)
 }
 
 if(params.demuxem_mode == 'TRUE'){
-  DEMUXEM_DEMUL(rna_data,hto_data,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
+  demux = DEMUXEM_DEMUL(rna_data,hto_raw,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
 }
 
 if(params.hash_solo_mode == 'TRUE'){
-  HASH_SOLO_DEMUL(hto_data,priors,output_file,output_plot)
+  hash_solo = HASH_SOLO_DEMUL(hto_data,priors,output_file,output_plot)
 }
 
 if(params.solo_mode == 'TRUE'){
-  SOLO_DEMUL(umi,soft,max_epochs,lr,output_solo)
+  solo SOLO_DEMUL(umi,soft,max_epochs,lr,output_solo)
 }
 
 
 if(params.general_assignment == 'TRUE'){
-  ASSIGNMENT_WORKFLOW(SEURAT.out[1],SEURAT.out[7],HASHED_DROPS.out[0],DEMUXEM_DEMUL.out,HASH_SOLO_DEMUL.out[0])
+  ASSIGNMENT_WORKFLOW(SEURAT.out[0],SEURAT.out[4],HASHED_DROPS.out[1],DEMUXEM_DEMUL.out,HASH_SOLO_DEMUL.out[0],SOLO_DEMUL.out)
 }
 
 }

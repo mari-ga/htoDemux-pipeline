@@ -97,21 +97,23 @@ if(argv$tsne){
 
 if(argv$heatmap){
   # To increase the efficiency of plotting, you can subsample cells using the num.cells argument
-  plot5 <-HTOHeatmap(pbmc.hashtag, assay = argv$assayName, ncells = argv$heatmapNcells)
+  plot5 <-HTOHeatmap(pbmc.hashtag, assay = "HTO", ncells = argv$heatmapNcells)
   png(paste("heatmap.png",sep=""))
   print(plot5)
   dev.off()
 }
+str(pbmc.hashtag)
+pbmc.hashtag$active.ident
 
 if(argv$cluster){
-  pbmc.singlet <- subset(pbmc.hashtag, idents = "Singlet")
+  pbmc.singlet <- subset(pbmc.hashtag, idents = "Negative")
   pbmc.singlet <- FindVariableFeatures(pbmc.singlet, selection.method = "mean.var.plot")
-  # pbmc.singlet <- ScaleData(pbmc.singlet, features = VariableFeatures(pbmc.singlet))
-  # pbmc.singlet <- RunPCA(pbmc.singlet, features = VariableFeatures(pbmc.singlet))
+  pbmc.singlet <- ScaleData(pbmc.singlet, features = VariableFeatures(pbmc.singlet))
+  pbmc.singlet <- RunPCA(pbmc.singlet, features = VariableFeatures(pbmc.singlet))
   # 
-  # pbmc.singlet <- FindNeighbors(pbmc.singlet, reduction = "pca", dims = 1:10)
-  # pbmc.singlet <- FindClusters(pbmc.singlet, resolution = 0.6, verbose = FALSE)
-  # pbmc.singlet <- RunTSNE(pbmc.singlet, reduction = "pca", dims = 1:10)
+  pbmc.singlet <- FindNeighbors(pbmc.singlet, reduction = "pca", dims = 1:10)
+  pbmc.singlet <- FindClusters(pbmc.singlet, resolution = 0.6, verbose = FALSE)
+  pbmc.singlet <- RunTSNE(pbmc.singlet, reduction = "pca", dims = 1:10)
   # # 
   # if(argv$dimPlot){
   #   plot6 <- DimPlot(pbmc.singlet, group.by = "HTO_classification")

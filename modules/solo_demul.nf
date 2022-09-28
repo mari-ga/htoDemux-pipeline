@@ -18,5 +18,6 @@ workflow SOLO_DEMUL{
            SOLO(rna_data,soft,max_epochs,lr,output_solo)
            
         }
-
+    emit:
+        SOLO.out
 }

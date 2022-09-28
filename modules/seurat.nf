@@ -56,7 +56,7 @@ workflow SEURAT{
         heatmap 
         heatmapNcells 
 
-
+  
     main:
     PREPROCESS(umi_matrix, hto_matrix,ndelim,sel_method, n_features,assay,a_name, margin, norm_method,out_file)
 
@@ -72,7 +72,9 @@ workflow SEURAT{
 
     MULTI_SEQ(umi_matrix, hto_matrix,ndelim,sel_method, n_features,assay,a_name, margin, norm_method,quantile_multi, autoThresh,  maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi)
     
-        
+
+    emit:
+      HTODEMUL.out 
   
 
     
