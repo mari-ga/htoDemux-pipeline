@@ -15,19 +15,16 @@ process HASHED_DROPS_DEMUL{
         val confidenMin
         val confidentNmads
         val combinations
-        val empty
-        val lower
-        val testAmbient
-        val nameOutputEmpty
+    
 
     output:
         file 'resultHashed.rds'
-        file '*.csv'
+        file 'resultHashed.csv'
      
 
     script:
         """ 
-            Rscript $baseDir/R/dropletUtils.R --fileUmi $umi_counts --fileHto $hto_matrix --nameOutputFileDrops $nameOutputFileDrops --nameOutputFileHashed $nameOutputFileHashed --ambient $ambient --minProp $minProp --pseudoCount $pseudoCount --constAmbient $constAmbient --doubletNmads $doubletNmads --doubletMin $doubletMin --confidenMin $confidenMin --confidentNmads $confidentNmads --combinations $combinations --empty $empty --lower $lower --testAmbient $testAmbient
+            Rscript $baseDir/R/dropletUtils.R --fileUmi $umi_counts --fileHto $hto_matrix --nameOutputFileDrops $nameOutputFileDrops --nameOutputFileHashed $nameOutputFileHashed --ambient $ambient --minProp $minProp --pseudoCount $pseudoCount --constAmbient $constAmbient --doubletNmads $doubletNmads --doubletMin $doubletMin --confidenMin $confidenMin --confidentNmads $confidentNmads --combinations $combinations 
         """
 
 }

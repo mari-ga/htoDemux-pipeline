@@ -22,17 +22,14 @@ workflow HASHED_DROPS{
         histogram
         plotLog
 
-        empty
-        lower
-        testAmbient
-        nameOutputEmpty
+        
 
 
 
     main:
         if(params.hashedMode == "TRUE")
         {
-           HASHED_DROPS_DEMUL(umi_matrix,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient,minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations,empty,lower,testAmbient,nameOutputEmpty)
+           HASHED_DROPS_DEMUL(umi_matrix,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient,minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations)
            if(params.hashedVisualisation == "TRUE")
            {
             HASHED_VISUALISATION(HASHED_DROPS_DEMUL.out[0],histogram,plotLog)

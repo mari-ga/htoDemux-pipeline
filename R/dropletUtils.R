@@ -17,6 +17,7 @@ p <- arg_parser("Parameters for Hashed Drops Demultiplexing")
 #Import files
 
 #p <- add_argument(p, "--fileUmi",help="Path to file UMI count matrix")
+
 p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 
 
@@ -35,12 +36,6 @@ p <- add_argument(p, "--doubletMin",help="Specifies the number of median absolut
 p <- add_argument(p, "--confidenMin",help="Specifies the minimum threshold on the log-fold change to use to identify singlets.", default = 2)
 p <- add_argument(p, "--confidentNmads",help="Specifies the number of MADs to use to identify confidently assigned singlet", default = 3)
 p <- add_argument(p, "--combinations",help="Specifies valid combinations of HTOs", default = NULL)
-
-p <- add_argument(p, "--empty",help="True only if the data provided is RAW", default = FALSE)
-p <- add_argument(p, "--lower",help=" numeric scalar specifying the lower bound on the total UMI count, at or below which all barcodes are assumed to correspond to empty droplets.", default = 100)
-p <- add_argument(p, "--testAmbient",help=" logical scalar indicating whether results should be returned for barcodes with totals less than or equal to lower", default = FALSE)
-p <- add_argument(p, "--nameOutputEmpty",help="Name for the empty droplets file", default = "emptyDropletsHashed")
-
 
 
 argv <- parse_args(p)
@@ -79,9 +74,7 @@ print(counts)
 print("----------------------------------")
 str(counts)
 
-if(argv$empty){
-emptyHashed <- testEmptyDrops(counts)
-}
+
 #---------------- Section 2 - Demultiplexing -----------------
 #hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, pseudo.count=argv$pseudoCount, constant.ambient = argv$constAmbient, doublet.nmads=argv$doubletNmads, confident.min=argv$confidenMin ,combinations=argv$combinations,confident.nmads=argv$confidentNmads,doublet.min=arg$doubletMin)
 #hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, constant.ambient = argv$constAmbient)
@@ -103,12 +96,8 @@ create_files <- function(name,extension) {
 }
 
 file_results <-create_files(argv$nameOutputFileDrops,".csv")
-empty_results <-create_files(argv$nameOutputEmpty,".csv")
+
 write.csv(hashed, file=file_results)
-if(argv$empty)
-{
-  write.csv(emptyHashed, file=empty_results)
-}
 pbmc_file = paste(argv$nameOutputFileHashed,".rds",sep="")
 print(pbmc_file)
 saveRDS(hashed, file=pbmc_file)

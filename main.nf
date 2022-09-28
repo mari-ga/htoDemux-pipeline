@@ -17,6 +17,7 @@ include { DEMUXEM_DEMUL } from './modules/demuxem_demul'
 include { HASH_SOLO_DEMUL } from './modules/hash_solo_demul'
 include { SOLO_DEMUL } from './modules/solo_demul'
 include { ASSIGNMENT_WORKFLOW } from './modules/assignment_flow.nf'
+include { EMPTY_DROPS_FLOW } from './modules/empty_drops_flow'
 
 workflow{
   //Params for pre-processing
@@ -83,10 +84,7 @@ workflow{
   combinations = Channel.from(params.combinations)
   histogram = Channel.from(params.histogram)
   plotLog = Channel.from(params.plotLog)
-  empty = Channel.from(params.empty)
-  lower = Channel.from(params.lower)
-  testAmbient = Channel.from(params.testAmbient)
-  nameOutputEmpty = Channel.from(params.nameOutputEmpty)
+  
 
   //Params for DemuxEM
   rna_data = Channel.from(params.rna_data)
@@ -111,6 +109,17 @@ workflow{
   lr = Channel.from(params.lr)
   output_solo = Channel.from(params.output_solo)
 
+  //params for Empty Drops
+  rna_raw = Channel.from(params.rna_raw)
+  empty_drops_mode = Channel.from(params.empty_drops_mode)
+  niters = Channel.from(params.niters)
+  empty = Channel.from(params.empty)
+  lower = Channel.from(params.lower)
+  testAmbient = Channel.from(params.testAmbient)
+  alpha = Channel.from(params.alpha)
+  ignore = Channel.from(params.ignore)
+  nameOutputEmpty = Channel.from(params.nameOutputEmpty)
+  
 
 if(params.seurat == 'TRUE'){
   seurat = SEURAT(umi,hto_matrix, sel_method,ndelim, n_features, assay, a_name, margin,norm_method,seed, init, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi, ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
@@ -132,10 +141,17 @@ if(params.solo_mode == 'TRUE'){
   solo SOLO_DEMUL(umi,soft,max_epochs,lr,output_solo)
 }
 
+if(params.empty_drops_mode == "TRUE")
+{
+  EMPTY_DROPS_FLOW(rna_raw,niters,empty,lower,testAmbient,alpha,ignore,nameOutputEmpty)
+}
+
 
 if(params.general_assignment == 'TRUE'){
   ASSIGNMENT_WORKFLOW(SEURAT.out[0],SEURAT.out[4],HASHED_DROPS.out[1],DEMUXEM_DEMUL.out,HASH_SOLO_DEMUL.out[0],SOLO_DEMUL.out)
+
 }
+
 
 }
 
