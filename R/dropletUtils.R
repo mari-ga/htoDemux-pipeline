@@ -24,7 +24,7 @@ p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 #Output paths
 #p <- add_argument(p, "--hashedDropsPath",help="Path to file where the results of Hashed Drops will be saved", default = NULL)
 p <- add_argument(p, "--nameOutputFileDrops",help="Name for the file containing the output of Hashed Drop object", default = "resultHashed.csv")
-p <- add_argument(p, "--nameOutputFileHashed",help="Name for the rds Object containing the Hashed Drop results", default = "resultHashed.rds")
+p <- add_argument(p, "--nameOutputFileHashed",help="Name for the rds Object containing the Hashed Drop results", default = "resultHashed_object.rds")
 
 #Demultiplexing parameters
 p <- add_argument(p, "--ambient",help="Specifies the relative abundance of each HTO in the ambient solution", default = "NULL")
@@ -36,7 +36,7 @@ p <- add_argument(p, "--doubletMin",help="Specifies the number of median absolut
 p <- add_argument(p, "--confidenMin",help="Specifies the minimum threshold on the log-fold change to use to identify singlets.", default = 2)
 p <- add_argument(p, "--confidentNmads",help="Specifies the number of MADs to use to identify confidently assigned singlet", default = 3)
 p <- add_argument(p, "--combinations",help="Specifies valid combinations of HTOs", default = NULL)
-
+p <- add_argument(p, "--rawData",help=" indicates whether the data provided is raw, default FALSE -> filtered data", default = FALSE)
 
 argv <- parse_args(p)
 
@@ -57,10 +57,9 @@ print(argv$ambient)
 # rownames(pbmc.htos)
 # print(argv$ambient)
 
+#If the data is raw, we receive the dataframe from empty drops
 
-#umi <- Read10X(data.dir = argv$fileUmi)
 counts <- Read10X(data.dir = argv$fileHto)
-
 
 #Identify which UMI corresponds to which hashtag.
 #joint.bcs <- intersect(colnames(umi), colnames(counts))

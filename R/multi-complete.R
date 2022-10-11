@@ -34,7 +34,9 @@ p <- add_argument(p, "--qrangeTo",help="A range of possible quantile values to t
 p <- add_argument(p, "--qrangeBy",help="A range of possible quantile values to try if autoThresh is TRUE",type="numeric", default = 0.05)
 p <- add_argument(p, "--verbose",help="Prints the output", default = TRUE)
 
-p <- add_argument(p, "--nameOutputFileMulti",help="Name for the file containing the output of MULTI-Seq object", default = "resultMulti")
+p <- add_argument(p, "--nameOutputFileMulti",help="Name for the file containing the output of MULTI-Seq object", default = "resultMulti_object")
+p <- add_argument(p, "--nameClassificationFileMulti",help="Name for the file containing the classification of MULTI-Seq", default = "resultMulti")
+
 
 argv <- parse_args(p)
 
@@ -78,7 +80,7 @@ create_files <- function(name,extension) {
 #Save Results
 print(argv$nameOutputFileMulti)
 print("-------")
-file_results <-create_files(argv$nameOutputFileMulti,".csv")
+file_results <-create_files(argv$nameClassificationFileMulti,".csv")
 write.csv(pbmc.hashtag$MULTI_ID, file=file_results)
 pbmc_file = paste(argv$nameOutputFileMulti,".rds",sep="")
 print(pbmc_file)

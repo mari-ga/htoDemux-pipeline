@@ -10,6 +10,7 @@ include { MULTI_SEQ } from './multi_complete'
 
 workflow SEURAT{
     take:
+
         umi_matrix
         hto_matrix
         sel_method
@@ -28,6 +29,8 @@ workflow SEURAT{
         n_stars 
         n_samples
         out_hto
+        assignment_hto
+        objectOutHTO
 
         quantile_multi
         autoThresh
@@ -37,6 +40,7 @@ workflow SEURAT{
         qrangeBy
         verbose
         out_multi
+        classification_multi
 
         ridgePlot
         ridgeNCol
@@ -62,20 +66,27 @@ workflow SEURAT{
 
   
       
-    HTODEMUL(PREPROCESS.out,quantile_hto,kfunc,n_stars,n_samples,seed, init,out_hto)
-
+    HTODEMUL(PREPROCESS.out,quantile_hto,kfunc,n_stars,n_samples,seed,init,out_hto,assignment_hto,objectOutHTO)
+   
+    
     
     if(params.visualisationSeurat == 'TRUE')
       {
         HTO_VISUALISATION(HTODEMUL.out[0],a_name, ridgePlot,ridgeNCol,featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
       }
-
-    MULTI_SEQ(umi_matrix, hto_matrix,ndelim,sel_method, n_features,assay,a_name, margin, norm_method,quantile_multi, autoThresh,  maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi)
     
+      MULTI_SEQ(umi_matrix, hto_matrix,ndelim,sel_method, n_features,assay,a_name, margin, norm_method,quantile_multi, autoThresh,  maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi,classification_multi)
+      
+      
+
+    classification_ch = HTODEMUL.out.classification_htodemux
+    assignment_ch = HTODEMUL.out.assignment_htodemux
+    multi_ch = MULTI_SEQ.out.classification_multi
 
     emit:
-      HTODEMUL.out 
-  
+      HTODEMUX_OUT_1 = classification_ch
+      HTODEMUX_OUT_2 = assignment_ch
+      MULTISEQ_OUT_1 = multi_ch
 
     
 }

@@ -2,7 +2,7 @@ process HASHED_DROPS_DEMUL{
     publishDir params.outdir, mode:'copy'
     
     input:
-        val umi_counts
+        
         val hto_matrix
         val nameOutputFileDrops
         val nameOutputFileHashed
@@ -18,13 +18,13 @@ process HASHED_DROPS_DEMUL{
     
 
     output:
-        file 'resultHashed.rds'
-        file 'resultHashed.csv'
+        file 'resultHashed_object.rds'
+        path 'resultHashed.csv', emit: hashed_drops_results
      
 
     script:
         """ 
-            Rscript $baseDir/R/dropletUtils.R --fileUmi $umi_counts --fileHto $hto_matrix --nameOutputFileDrops $nameOutputFileDrops --nameOutputFileHashed $nameOutputFileHashed --ambient $ambient --minProp $minProp --pseudoCount $pseudoCount --constAmbient $constAmbient --doubletNmads $doubletNmads --doubletMin $doubletMin --confidenMin $confidenMin --confidentNmads $confidentNmads --combinations $combinations 
+            Rscript $baseDir/R/dropletUtils.R  --fileHto $hto_matrix --nameOutputFileDrops $nameOutputFileDrops --nameOutputFileHashed $nameOutputFileHashed --ambient $ambient --minProp $minProp --pseudoCount $pseudoCount --constAmbient $constAmbient --doubletNmads $doubletNmads --doubletMin $doubletMin --confidenMin $confidenMin --confidentNmads $confidentNmads --combinations $combinations 
         """
 
 }

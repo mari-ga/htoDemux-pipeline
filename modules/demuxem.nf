@@ -2,8 +2,8 @@ process DEMUXEM{
     publishDir params.outdir, mode:'copy'
     label "demuxem"
     input:
-        path rna_data 
-        path hto_data
+        path rna_raw 
+        path hto_matrix
         val alpha
         val alpha_noise
         val tol
@@ -11,12 +11,12 @@ process DEMUXEM{
         val min_signal
         val output_demux
     output:
-        file 'demuxEm.csv'
+        path 'demuxEm.csv', emit: demuxem_out
         
     script:
 
         """
-          python $baseDir/Python/demuxEM_demul.py --rna_data $rna_data --hto_matrix $hto_data --output $output_demux
+          python $baseDir/Python/demuxEM_demul.py --rna_data $rna_raw --hto_matrix $hto_matrix --output $output_demux
         """
 
 }

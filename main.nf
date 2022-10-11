@@ -16,8 +16,9 @@ include { HASHED_DROPS } from './modules/hashed_drops'
 include { DEMUXEM_DEMUL } from './modules/demuxem_demul'
 include { HASH_SOLO_DEMUL } from './modules/hash_solo_demul'
 include { SOLO_DEMUL } from './modules/solo_demul'
-include { ASSIGNMENT_WORKFLOW } from './modules/assignment_flow.nf'
+include { ASSIGNMENT_WORKFLOW } from './modules/assignment_flow'
 include { EMPTY_DROPS_FLOW } from './modules/empty_drops_flow'
+include { EMPTY_REPORT } from './modules/report_maker'
 
 workflow{
   //Params for pre-processing
@@ -31,8 +32,10 @@ workflow{
   margin = Channel.from(params.margin)
   norm_method = Channel.from(params.normalisation_method)
   out_file = Channel.from(params.nameOutputFile)
+  objectOutHTO = Channel.from(params.objectOutHTO)
+  
 
-  //Params for HTODemul
+  //Params for HTODemux
   quantile_hto = Channel.from(params.quantile_hto)
   kfunc = Channel.from(params.kfunc)
   n_stars = Channel.from(params.nstarts)
@@ -40,6 +43,7 @@ workflow{
   seed = Channel.from(params.seed)
   init = Channel.from(params.init)
   out_hto = Channel.from(params.nameOutputFileHTO)
+  assignment_hto = Channel.from(params.nameAssignmentFileHTO)
 
   //Params for MULTI-seq
   quantile_multi = Channel.from(params.quantile_multi)
@@ -50,6 +54,7 @@ workflow{
   qrangeBy = Channel.from(params.qrangeBy)
   verbose = Channel.from(params.verbose)
   out_multi = Channel.from(params.nameOutputFileMulti)
+  classification_multi = Channel.from(params.nameClassificationFileMulti)
 
   //Params for HTO-Demul visualisation
   ridgePlot = Channel.from(params.ridgePlot)
@@ -87,8 +92,8 @@ workflow{
   
 
   //Params for DemuxEM
-  rna_data = Channel.from(params.rna_data)
-  hto_raw = Channel.from(params.hto_raw)
+  //using filtered HTO matrix - same as Hashed Drops, HtoDemux and Multi-seq
+  // using RNA raw matrix - same as empty drops
   alpha = Channel.from(params.alpha)
   alpha_noise = Channel.from(params.alpha_noise)
   tol = Channel.from(params.tol)
@@ -99,7 +104,9 @@ workflow{
 
   //Params for Hash Solo
   hto_data = Channel.from(params.hto_data)
-  priors = Channel.from(params.priors)
+  priors_negative = Channel.from(params.priors_negative)
+  priors_singlet = Channel.from(params.priors_singlet)
+  priors_doublet = Channel.from(params.priors_doublet)
   output_file = Channel.from(params.output_file)
   output_plot = Channel.from(params.output_plot)
 
@@ -116,41 +123,46 @@ workflow{
   empty = Channel.from(params.empty)
   lower = Channel.from(params.lower)
   testAmbient = Channel.from(params.testAmbient)
-  alpha = Channel.from(params.alpha)
+  alpha_empty = Channel.from(params.alpha_empty)
   ignore = Channel.from(params.ignore)
   nameOutputEmpty = Channel.from(params.nameOutputEmpty)
+
+  empty_col = Channel.from(params.col_1)
+  output_assignment = Channel.from(params.output_assignment)
   
+//The next lines correspond to the workflows for all the tools in the project
+//It is not obligatory to use all of them at once
 
 if(params.seurat == 'TRUE'){
-  seurat = SEURAT(umi,hto_matrix, sel_method,ndelim, n_features, assay, a_name, margin,norm_method,seed, init, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi, ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
+  SEURAT(umi,hto_matrix, sel_method,ndelim, n_features, assay, a_name, margin,norm_method,seed, init, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,assignment_hto,objectOutHTO,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi,classification_multi,ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
 }
 
 if(params.hashedMode == 'TRUE'){
-  hashed = HASHED_DROPS(umi,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations,histogram,plotLog,empty,lower,testAmbient,nameOutputEmpty)
+  HASHED_DROPS(hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations,histogram,plotLog)
 }
 
 if(params.demuxem_mode == 'TRUE'){
-  demux = DEMUXEM_DEMUL(rna_data,hto_raw,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
+  DEMUXEM_DEMUL(rna_raw,hto_matrix,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
 }
 
 if(params.hash_solo_mode == 'TRUE'){
-  hash_solo = HASH_SOLO_DEMUL(hto_data,priors,output_file,output_plot)
+  HASH_SOLO_DEMUL(hto_data,priors_negative,priors_singlet,priors_doublet,output_file,output_plot)
 }
 
 if(params.solo_mode == 'TRUE'){
-  solo SOLO_DEMUL(umi,soft,max_epochs,lr,output_solo)
+  SOLO_DEMUL(umi,soft,max_epochs,lr,output_solo)
 }
 
 if(params.empty_drops_mode == "TRUE")
 {
-  EMPTY_DROPS_FLOW(rna_raw,niters,empty,lower,testAmbient,alpha,ignore,nameOutputEmpty)
+  EMPTY_DROPS_FLOW(rna_raw,niters,empty,lower,testAmbient,alpha_empty,ignore,nameOutputEmpty)
 }
 
 
-if(params.general_assignment == 'TRUE'){
-  ASSIGNMENT_WORKFLOW(SEURAT.out[0],SEURAT.out[4],HASHED_DROPS.out[1],DEMUXEM_DEMUL.out,HASH_SOLO_DEMUL.out[0],SOLO_DEMUL.out)
 
-}
+
+ASSIGNMENT_WORKFLOW(SEURAT.out.HTODEMUX_OUT_2, SEURAT.out.MULTISEQ_OUT_1,HASHED_DROPS.out.HASHED_DROPS_OUT,HASH_SOLO_DEMUL.out.HASH_SOLO_OUT,output_assignment)
+
 
 
 }

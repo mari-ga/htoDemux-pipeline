@@ -20,14 +20,15 @@ process MULTI_SEQ{
     val qrangeBy
     val verbose
     val nameOutputFileMulti
+    val nameClassificationFileMulti
 
     output:
-        file 'resultMulti.rds'
-        file 'resultMulti.csv'
+        file 'resultMulti_object.rds'
+        path 'resultMulti.csv', emit: classification_multi
 
     script:
     """
     
-    Rscript $baseDir/R/multi-complete.R --fileUmi $umi_counts --fileHto $hto_matrix --ndelim $ndelim --selectMethod $selection_method --numberFeatures $number_features --assay $assay --assayName $assayName --margin $margin --normalisationMethod $normalisation_method --quantile_multi $quantile_multi --autoThresh $autoThresh --maxiter $maxiter --qrangeFrom $qrangeFrom --qrangeTo $qrangeTo --qrangeBy $qrangeBy --verbose $verbose  --nameOutputFileMulti $nameOutputFileMulti
+    Rscript $baseDir/R/multi-complete.R --fileUmi $umi_counts --fileHto $hto_matrix --ndelim $ndelim --selectMethod $selection_method --numberFeatures $number_features --assay $assay --assayName $assayName --margin $margin --normalisationMethod $normalisation_method --quantile_multi $quantile_multi --autoThresh $autoThresh --maxiter $maxiter --qrangeFrom $qrangeFrom --qrangeTo $qrangeTo --qrangeBy $qrangeBy --verbose $verbose  --nameOutputFileMulti $nameOutputFileMulti --nameClassificationFileMulti $nameClassificationFileMulti
     """
 }

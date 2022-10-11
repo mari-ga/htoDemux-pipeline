@@ -5,7 +5,7 @@ include { HASHED_VISUALISATION } from './hashed_drops_visualisation'
 
 workflow HASHED_DROPS{
     take:
-        umi_matrix
+        
         hto_matrix
         nameOutputFileDrops
         nameOutputFileHashed
@@ -22,14 +22,11 @@ workflow HASHED_DROPS{
         histogram
         plotLog
 
-        
-
-
-
     main:
         if(params.hashedMode == "TRUE")
         {
-           HASHED_DROPS_DEMUL(umi_matrix,hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient,minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations)
+           HASHED_DROPS_DEMUL(hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient,minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations)
+           hashed_drops_ch = HASHED_DROPS_DEMUL.out.hashed_drops_results
            if(params.hashedVisualisation == "TRUE")
            {
             HASHED_VISUALISATION(HASHED_DROPS_DEMUL.out[0],histogram,plotLog)
@@ -38,7 +35,7 @@ workflow HASHED_DROPS{
         }
     
     emit:
-        HASHED_DROPS_DEMUL.out
+        HASHED_DROPS_OUT = hashed_drops_ch
 
 
 

@@ -9,7 +9,7 @@ workflow EMPTY_DROPS_FLOW{
        empty
        lower
        testAmbient
-       alpha
+       alpha_empty
        ignore
        nameOutputEmpty
 
@@ -17,8 +17,9 @@ workflow EMPTY_DROPS_FLOW{
     main:
         if(params.empty_drops_mode == "TRUE")
         {
-           EMPTY_DROPS(rna_raw,niters,empty,lower,testAmbient,alpha,ignore,nameOutputEmpty)
-           
+           EMPTY_DROPS(rna_raw,niters,empty,lower,testAmbient,alpha_empty,ignore,nameOutputEmpty)
+           empty_ch = EMPTY_DROPS.out
         }
-
+    emit:
+        empty_out = empty_ch
 }

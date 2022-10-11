@@ -27,8 +27,10 @@ p <- add_argument(p, "--seed",help="sets random seed", type="numeric",default=42
 p <- add_argument(p, "--init",help="Initial number of clusters for hashtags")
 
 #Output paths
-#p <- add_argument(p, "--htoDemuxOutPath",help="Path to file where the results of htoDemux will be saved", default = NULL)
-p <- add_argument(p, "--nameOutputFileHTO",help="Name for the file containing the output of HTODemux object", default = "result.csv")
+p <- add_argument(p, "--objectOutHTO",help="Name for the object containing the output of HTODemux object", default = "resultHTO")
+p <- add_argument(p, "--nameOutputFileHTO",help="Name for the file containing the output of HTODemux object", default = "classification_htodemux.csv")
+p <- add_argument(p, "--nameAssignmentFileHTO",help="Name for the file containing the assignment file of HTODemux object", default = "assignment_htodemux.csv")
+
 
 
 argv <- parse_args(p)
@@ -132,10 +134,10 @@ create_files <- function(name,extension) {
 print(argv$nameOutputFileHTO)
 print("-------")
 file_results <-create_files(argv$nameOutputFileHTO,".csv")
-file_results_2 <-create_files("classification_hash",".csv")
+file_results_2 <-create_files("assignment_htodemux",".csv")
 write.csv(pbmc.hashtag$HTO_classification, file=file_results_2)
 write.csv(pbmc.hashtag$HTO_classification.global, file=file_results)
-pbmc_file = paste(argv$nameOutputFileHTO,".rds",sep="")
+pbmc_file = paste(argv$objectOutHTO,".rds",sep="")
 saveRDS(pbmc.hashtag, file=pbmc_file)
 
 

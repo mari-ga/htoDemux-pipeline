@@ -9,7 +9,7 @@ process SOLO{
         val output_solo 
         
     output:
-        file 'solo_prediction.csv'
+        path 'solo_prediction.csv', emit: solo_out
         
     script:
 

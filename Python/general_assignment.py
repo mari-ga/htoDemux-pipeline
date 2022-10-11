@@ -31,8 +31,9 @@ if(args.hashsolo_results != "-"):
     del hashsolo_hash["negative_hypothesis_probability"]
     del hashsolo_hash["singlet_hypothesis_probability"]
     del hashsolo_hash["doublet_hypothesis_probability"]
-    hashsolo_hash.columns = ["Barcode","Assignment-hashsolo"]
-    total_classification.append(hashsolo_hash)
+    hashsolo_hash.columns = ["Barcode-total","Assignment-hashsolo"]
+    total_classification= pd.concat([total_classification,hashsolo_hash],axis=1)
+    
 
 if(args.demuxem_results != "-"):  
     demuxem_results = pd.read_csv(args.demuxem_results)

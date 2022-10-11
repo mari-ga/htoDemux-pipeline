@@ -7,16 +7,15 @@ workflow ASSIGNMENT_WORKFLOW{
         hto_assignment
         multi_assignment
         hash_drops_assignment
-        demuxem_assignment
+        //demuxem_assignment
         hash_solo_assignment
         output_assignment
 
 
     main:
-        if(params.general_mode == "TRUE")
-        {
-           ASSIGNMENT(hto_assignment,multi_assignment,hash_drops_assignment,demuxem_assignment,hash_solo_assignment,output_assignment)
+      
+           ASSIGNMENT(hto_assignment,multi_assignment,hash_drops_assignment,hash_solo_assignment,output_assignment)
            
-        }
+        
 
 }

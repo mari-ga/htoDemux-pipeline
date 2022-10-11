@@ -5,7 +5,7 @@ process ASSIGNMENT{
         path hto_assignment
         path multi_assignment
         path hash_drops_assignment
-        path demuxem_assignment
+        //path demuxem_assignment
         path hash_solo_assignment
         val output_assignment
     output:
@@ -14,7 +14,7 @@ process ASSIGNMENT{
     script:
 
         """
-          python $baseDir/Python/general_assignment.py --htodemul_assignment $hto_assignment --multiseq_results $multi_assignment --hashed_drop_results $hash_drops_assignment --demuxem_results $demuxem_assignment --hashsolo_results $hash_solo_assignment --output_assignment $output_assignment
+          python $baseDir/Python/general_assignment.py --htodemul_assignment $hto_assignment --multiseq_results $multi_assignment --hashed_drop_results $hash_drops_assignment --hashsolo_results $hash_solo_assignment --output_assignment $output_assignment
         
         """
 }
