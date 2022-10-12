@@ -19,6 +19,7 @@ include { SOLO_DEMUL } from './modules/solo_demul'
 include { ASSIGNMENT_WORKFLOW } from './modules/assignment_flow'
 include { EMPTY_DROPS_FLOW } from './modules/empty_drops_flow'
 include { EMPTY_REPORT } from './modules/report_maker'
+include { CLASSIFICATION_WORKFLOW } from './modules/classification_flow'
 
 workflow{
   //Params for pre-processing
@@ -129,7 +130,7 @@ workflow{
 
   empty_col = Channel.from(params.col_1)
   output_assignment = Channel.from(params.output_assignment)
-  
+  output_classification = Channel.from(params.output_classification)
 //The next lines correspond to the workflows for all the tools in the project
 //It is not obligatory to use all of them at once
 
@@ -163,7 +164,7 @@ if(params.empty_drops_mode == "TRUE")
 
 ASSIGNMENT_WORKFLOW(SEURAT.out.HTODEMUX_OUT_2, SEURAT.out.MULTISEQ_OUT_1,HASHED_DROPS.out.HASHED_DROPS_OUT,HASH_SOLO_DEMUL.out.HASH_SOLO_OUT,output_assignment)
 
-
+CLASSIFICATION_WORKFLOW(SEURAT.out.HTODEMUX_OUT_1,SEURAT.out.MULTISEQ_OUT_1,HASHED_DROPS.out.HASHED_DROPS_OUT,HASH_SOLO_DEMUL.out.HASH_SOLO_OUT,output_classification)
 
 }
 
