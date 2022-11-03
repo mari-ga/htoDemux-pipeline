@@ -34,7 +34,7 @@ argv <- parse_args(p)
 
 
 pbmc.hashtag <-readRDS(argv$seuratObjectPath)
-str(pbmc.hashtag)
+
 
 
 #------------------ Section 4 - Demultiplex cells based on HTO enrichment ---------------------

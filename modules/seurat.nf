@@ -11,6 +11,9 @@ include { MULTI_SEQ } from './multi_complete'
 workflow SEURAT{
     take:
 
+        visualisation_seurat
+        rdsObject
+
         umi_matrix
         hto_matrix
         sel_method
@@ -62,7 +65,7 @@ workflow SEURAT{
 
   
     main:
-    PREPROCESS(umi_matrix, hto_matrix,ndelim,sel_method, n_features,assay,a_name, margin, norm_method,out_file)
+    PREPROCESS(rdsObject,umi_matrix, hto_matrix,ndelim,sel_method, n_features,assay,a_name, margin, norm_method,out_file)
 
   
       
@@ -70,12 +73,11 @@ workflow SEURAT{
    
     
     
-    if(params.visualisationSeurat == 'TRUE')
-      {
-        HTO_VISUALISATION(HTODEMUL.out[0],a_name, ridgePlot,ridgeNCol,featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
-      }
     
-      MULTI_SEQ(umi_matrix, hto_matrix,ndelim,sel_method, n_features,assay,a_name, margin, norm_method,quantile_multi, autoThresh,  maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi,classification_multi)
+    HTO_VISUALISATION(HTODEMUL.out[0],a_name, ridgePlot,ridgeNCol,featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
+      
+    
+    MULTI_SEQ(rdsObject,umi_matrix, hto_matrix,ndelim,sel_method, n_features,assay,a_name, margin, norm_method,quantile_multi, autoThresh,  maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi,classification_multi)
       
       
 

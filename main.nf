@@ -5,9 +5,21 @@ log.info """\
  Hashtag Demultiplexing - P I P E L I N E
  ===================================
  Input Files:
-
- UMI-Counts: ${params.umi_count}
+Seurat:
+ RNA-Data: ${params.umi_count}
  HTO-Matrix: ${params.hto_mat}
+
+ Empty Drops - DemuxEM
+ HTO-Matrix raw: ${params.hto_raw}
+
+ Hashed Drops:
+ HTO-Data: ${params.hashtag_data}
+ 
+ Type of data:
+ Raw-data: ${params.rawData}
+ demultiplexing: ${params.demultiplexing}
+ doublet detection: ${params.doublet_detection}
+ filtering data: ${params.cleaning_raw}
 
  """
 
@@ -16,13 +28,14 @@ include { HASHED_DROPS } from './modules/hashed_drops'
 include { DEMUXEM_DEMUL } from './modules/demuxem_demul'
 include { HASH_SOLO_DEMUL } from './modules/hash_solo_demul'
 include { SOLO_DEMUL } from './modules/solo_demul'
-include { ASSIGNMENT_WORKFLOW } from './modules/assignment_flow'
 include { EMPTY_DROPS_FLOW } from './modules/empty_drops_flow'
-include { EMPTY_REPORT } from './modules/report_maker'
+include { ASSIGNMENT_WORKFLOW } from './modules/assignment_flow'
 include { CLASSIFICATION_WORKFLOW } from './modules/classification_flow'
+include { FINAL_REPORT } from './modules/final_report'
 
 workflow{
   //Params for pre-processing
+  rdsObject = Channel.from(params.rdsObject)
   umi = Channel.fromPath(params.umi_count, checkIfExists: true )
   hto_matrix =  Channel.fromPath(params.hto_mat, checkIfExists: true )
   sel_method = Channel.from(params.selection_method)
@@ -58,6 +71,7 @@ workflow{
   classification_multi = Channel.from(params.nameClassificationFileMulti)
 
   //Params for HTO-Demul visualisation
+  visualisation_seurat = Channel.from(params.visualisationSeurat)
   ridgePlot = Channel.from(params.ridgePlot)
   ridgeNCol = Channel.from(params.ridgeNCol)
   featureScatter = Channel.from(params.featureScatter)
@@ -77,8 +91,10 @@ workflow{
   heatmapNcells = Channel.from(params.heatmapNcells)
 
   //Params for Hashed Drops
+  hashtag_data = Channel.from(params.hashtag_data)
   nameOutputFileDrops = Channel.from(params.nameOutputFileDrops)
   nameOutputFileHashed = Channel.from(params.nameOutputFileHashed)
+  rawData = Channel.from(params.rawData)
   ambient = Channel.from(params.ambient)
   minProp = Channel.from(params.minProp)
   pseudoCount = Channel.from(params.pseudoCount)
@@ -87,9 +103,9 @@ workflow{
   doubletMin = Channel.from(params.doubletMin)
   confidenMin = Channel.from(params.confidenMin)
   confidentNmads = Channel.from(params.confidentNmads)
-  combinations = Channel.from(params.combinations)
   histogram = Channel.from(params.histogram)
   plotLog = Channel.from(params.plotLog)
+  empty_drops_result = Channel.from(params.empty_drops_result)
   
 
   //Params for DemuxEM
@@ -119,7 +135,7 @@ workflow{
 
   //params for Empty Drops
   rna_raw = Channel.from(params.rna_raw)
-  empty_drops_mode = Channel.from(params.empty_drops_mode)
+  hto_raw = Channel.from(params.hto_raw)
   niters = Channel.from(params.niters)
   empty = Channel.from(params.empty)
   lower = Channel.from(params.lower)
@@ -127,46 +143,64 @@ workflow{
   alpha_empty = Channel.from(params.alpha_empty)
   ignore = Channel.from(params.ignore)
   nameOutputEmpty = Channel.from(params.nameOutputEmpty)
+  nameObjectEmpty = Channel.from(params.nameObjectEmpty)
+  //general assignment, classification and intermediate file
 
-  empty_col = Channel.from(params.col_1)
   output_assignment = Channel.from(params.output_assignment)
   output_classification = Channel.from(params.output_classification)
-//The next lines correspond to the workflows for all the tools in the project
-//It is not obligatory to use all of them at once
+  output_final =  Channel.from(params.output_final)
 
-if(params.seurat == 'TRUE'){
-  SEURAT(umi,hto_matrix, sel_method,ndelim, n_features, assay, a_name, margin,norm_method,seed, init, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,assignment_hto,objectOutHTO,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi,classification_multi,ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
+  demux = "/Users/mylenemarianagonzalesandre/Development/Results-cluster/Results-Batch1-orig-param/output_demuxEM.csv"
+
+
+  if(params.demultiplexing == "TRUE"){
+
+    SEURAT(visualisation_seurat,rdsObject,umi,hto_matrix, sel_method,ndelim, n_features, assay, a_name, margin,norm_method,seed, init, out_file, quantile_hto,kfunc, n_stars,n_samples,out_hto,assignment_hto,objectOutHTO,quantile_multi,autoThresh,maxIter,qrangeFrom,qrangeTo,qrangeBy,verbose,out_multi,classification_multi,ridgePlot,ridgeNCol, featureScatter,scatterFeat1,scatterFeat2,vlnplot,vlnFeatures,vlnLog,tsne,tseIdents,tsneInvert,tsneVerbose,tsneApprox,tsneDimMax,tsePerplexity,heatmap,heatmapNcells)
+    demux_out_1 = SEURAT.out.HTODEMUX_OUT_1
+    demux_out_2 = SEURAT.out.HTODEMUX_OUT_2
+    multi_out = SEURAT.out.MULTISEQ_OUT_1
+
+    hashed_drops_out = Channel.empty()
+    HASHED_DROPS(empty_drops_result,rawData,hashtag_data,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,histogram,plotLog,hto_raw,niters,empty,lower,testAmbient,alpha_empty,ignore,nameOutputEmpty,nameObjectEmpty)
+    hashed_drops_out = HASHED_DROPS.out.HASHED_DROPS_OUT
+
+    demuxem_out = Channel.empty()
+    DEMUXEM_DEMUL(rna_raw,hto_matrix,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
+    demuxem_out = DEMUXEM_DEMUL.out.DEMUXEM_OUT
+    
+
+    hash_solo_out = Channel.empty()
+    HASH_SOLO_DEMUL(hto_data,priors_negative,priors_singlet,priors_doublet,output_file,output_plot)
+    hash_solo_out = HASH_SOLO_DEMUL.out.HASH_SOLO_OUT
+
+    ASSIGNMENT_WORKFLOW(demux_out_2,multi_out,hashed_drops_out,hash_solo_out,demuxem_out,output_assignment)
+
+    CLASSIFICATION_WORKFLOW(demux_out_1,multi_out,hashed_drops_out,hash_solo_out,demuxem_out,output_classification)
+
+  }else{
+    print("demultiplexing was not executed")
+  }
+
+
+  if(params.doublet_detection == "TRUE"){
+    solo_out = Channel.empty()
+    SOLO_DEMUL(umi,soft,max_epochs,lr,output_solo)
+    solo_out = SOLO_DEMUL.out.SOLO_OUT
+    
+  }else{
+    print("Solo was not executed")
+  }
+
+  if(params.cleaning_raw == "TRUE"){
+    EMPTY_DROPS_FLOW(hto_raw,niters,empty,lower,testAmbient,alpha_empty,ignore,nameOutputEmpty,nameObjectEmpty)
+  
+  }else{
+    print("Empty Drops was not executed")
+  }
+
+  if (params.demultiplexing == "TRUE" && params.doublet_detection == "TRUE" )
+  {
+    FINAL_REPORT(CLASSIFICATION_WORKFLOW.out.classification_out,solo_out,output_final)
+  }
+
 }
-
-if(params.hashedMode == 'TRUE'){
-  HASHED_DROPS(hto_matrix,nameOutputFileDrops,nameOutputFileHashed,ambient, minProp,pseudoCount,constAmbient,doubletNmads,doubletMin,confidenMin,confidentNmads,combinations,histogram,plotLog)
-}
-
-if(params.demuxem_mode == 'TRUE'){
-  DEMUXEM_DEMUL(rna_raw,hto_matrix,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
-}
-
-if(params.hash_solo_mode == 'TRUE'){
-  HASH_SOLO_DEMUL(hto_data,priors_negative,priors_singlet,priors_doublet,output_file,output_plot)
-}
-
-if(params.solo_mode == 'TRUE'){
-  SOLO_DEMUL(umi,soft,max_epochs,lr,output_solo)
-}
-
-if(params.empty_drops_mode == "TRUE")
-{
-  EMPTY_DROPS_FLOW(rna_raw,niters,empty,lower,testAmbient,alpha_empty,ignore,nameOutputEmpty)
-}
-
-
-
-
-ASSIGNMENT_WORKFLOW(SEURAT.out.HTODEMUX_OUT_2, SEURAT.out.MULTISEQ_OUT_1,HASHED_DROPS.out.HASHED_DROPS_OUT,HASH_SOLO_DEMUL.out.HASH_SOLO_OUT,output_assignment)
-
-CLASSIFICATION_WORKFLOW(SEURAT.out.HTODEMUX_OUT_1,SEURAT.out.MULTISEQ_OUT_1,HASHED_DROPS.out.HASHED_DROPS_OUT,HASH_SOLO_DEMUL.out.HASH_SOLO_OUT,output_classification)
-
-}
-
-
-//params.outdir = '/home/icb/mariana.gonzales/pipeline/demultiplex-pipeline/results/'

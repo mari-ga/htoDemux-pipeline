@@ -19,7 +19,8 @@ p <- arg_parser("Parameters for Hashed Drops Demultiplexing")
 #p <- add_argument(p, "--fileUmi",help="Path to file UMI count matrix")
 
 p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
-
+p <- add_argument(p, "--rdsObject",help="True if inputs are rds objects")
+p <- add_argument(p, "--rawData",help="True if inputs comes from raw data - previously treated with empty drops",default=FALSE)
 
 #Output paths
 #p <- add_argument(p, "--hashedDropsPath",help="Path to file where the results of Hashed Drops will be saved", default = NULL)
@@ -35,49 +36,35 @@ p <- add_argument(p, "--doubletNmads",help="Specifies the number of median absol
 p <- add_argument(p, "--doubletMin",help="Specifies the number of median absolute deviations (MADs) to use to identify doublets.", default = 2)
 p <- add_argument(p, "--confidenMin",help="Specifies the minimum threshold on the log-fold change to use to identify singlets.", default = 2)
 p <- add_argument(p, "--confidentNmads",help="Specifies the number of MADs to use to identify confidently assigned singlet", default = 3)
-p <- add_argument(p, "--combinations",help="Specifies valid combinations of HTOs", default = NULL)
-p <- add_argument(p, "--rawData",help=" indicates whether the data provided is raw, default FALSE -> filtered data", default = FALSE)
 
 argv <- parse_args(p)
 
 
-print(argv$ambient)
 #---------------- Section 1 - Input files -----------------
-# pbmc.umis <-readRDS(argv$fileUmi)
-# pbmc.htos <-readRDS(argv$fileHto)
-
-# #Identify which UMI corresponds to which hashtag.
-# joint.bcs <- intersect(colnames(pbmc.umis), colnames(pbmc.htos))
-
-# # Subset RNA and HTO counts by joint cell barcodes
-# pbmc.umis <- pbmc.umis[, joint.bcs]
-# pbmc.htos <- as.matrix(pbmc.htos[, joint.bcs])
-
-# # Confirm that the HTO have the correct names
-# rownames(pbmc.htos)
-# print(argv$ambient)
 
 #If the data is raw, we receive the dataframe from empty drops
+print(argv$rdsObject)
+
 
 counts <- Read10X(data.dir = argv$fileHto)
+if(isTRUE(argv$rawData)){
+ 
+ empty_results <- readRDS(argv$rdsObject)
+ #emptyDrops(counts)
+ print(empty_results)
+ #Code from BioConductor: https://bioconductor.org/packages/release/bioc/vignettes/DropletUtils/inst/doc/DropletUtils.html#demultiplexing-hashed-libraries
+ has.cell <- empty_results$FDR <= 0.001
+ print(summary(has.cell))
+ print(counts[,which(has.cell)])
+ hashed <- hashedDrops(counts[,which(has.cell)], ambient=metadata(empty_results)$ambient,min.prop = argv$minProp, constant.ambient = argv$constAmbient,doublet.nmads=argv$doubletNmads,confident.min=argv$confidenMin,confident.nmads=argv$confidentNmads,doublet.min=argv$doubletMin)
 
-#Identify which UMI corresponds to which hashtag.
-#joint.bcs <- intersect(colnames(umi), colnames(counts))
-
-# Subset RNA and HTO counts by joint cell barcodes
-#umi<- umi[, joint.bcs]
-#counts mean HTO (just in case)
-#counts <- counts[, joint.bcs]
-
-print(counts)
-print("----------------------------------")
-str(counts)
-
-
-#---------------- Section 2 - Demultiplexing -----------------
-#hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, pseudo.count=argv$pseudoCount, constant.ambient = argv$constAmbient, doublet.nmads=argv$doubletNmads, confident.min=argv$confidenMin ,combinations=argv$combinations,confident.nmads=argv$confidentNmads,doublet.min=arg$doubletMin)
-#hashed <- hashedDrops(pbmc.htos,  ambient = argv$ambient ,min.prop = argv$minProp, constant.ambient = argv$constAmbient)
+}else{
+print("Hashed Drops no raw data")
 hashed <- hashedDrops(counts, ambient = NULL, min.prop = argv$minProp, constant.ambient = argv$constAmbient,doublet.nmads=argv$doubletNmads,confident.min=argv$confidenMin,confident.nmads=argv$confidentNmads,doublet.min=argv$doubletMin)
+}
+
+
+
 
 #------------------Section 3 - Saving results ---------------------------"
 
@@ -98,6 +85,5 @@ file_results <-create_files(argv$nameOutputFileDrops,".csv")
 
 write.csv(hashed, file=file_results)
 pbmc_file = paste(argv$nameOutputFileHashed,".rds",sep="")
-print(pbmc_file)
 saveRDS(hashed, file=pbmc_file)
 

@@ -10,7 +10,7 @@ library(argparser, quietly=TRUE)
 # Create a parser
 p <- arg_parser("Parameters for Empty Drops cell identification")
 
-p <- add_argument(p, "--fileUmi",help="Path to file UMI count matrix")
+p <- add_argument(p, "--fileHto",help="Path to file HTO count matrix raw data")
 
 p <- add_argument(p, "--niters",help="An integer scalar specifying the number of iterations to use for the Monte Carlo p-value calculations.",default=10000)
 p <- add_argument(p, "--empty",help="True only if the data provided is RAW", default = TRUE)
@@ -20,13 +20,15 @@ p <- add_argument(p, "--alpha",help="A numeric scalar specifying the scaling par
 p <- add_argument(p, "--ignore",help="A numeric scalar specifying the lower bound on the total UMI count, at or below which barcodes will be ignored", default = NULL)
 
 p <- add_argument(p, "--nameOutputEmpty",help="Name for the empty droplets file", default = "emptyDropletsHashed")
+p <- add_argument(p, "--nameObjectEmpty",help="Name for the empty droplets file", default = "emptyDropletsObject")
 
 argv <- parse_args(p)
 
-umi <- Read10X(data.dir = argv$fileUmi)
+hto <- Read10X(data.dir = argv$fileHto)
 print(argv$alpha)
 if(isTRUE(argv$empty)){
-emptyHashed <- testEmptyDrops(umi,lower= argv$lower,niters =argv$niters,test.ambient =argv$testAmbient )
+emptyHashed <- emptyDrops(hto,lower= argv$lower,niters =argv$niters,test.ambient =argv$testAmbient )
+
 #alpha produces an error when using default values
 #alpha=argv$alpha,
 #Currently ignore is not supported
@@ -49,4 +51,6 @@ if(isTRUE(argv$empty))
 {
   empty_results <-create_files(argv$nameOutputEmpty,".csv")
   write.csv(emptyHashed, file=empty_results)
+  pbmc_file = paste(argv$nameObjectEmpty,".rds",sep="")
+  saveRDS(emptyHashed, file=pbmc_file)
 }

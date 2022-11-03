@@ -12,17 +12,22 @@ parser.add_argument('--multiseq_results',  help='CSV file with classification re
 parser.add_argument('--hashed_drop_results',  help='CSV file with classification results from Hashed Drop',default="-")
 parser.add_argument('--demuxem_results',  help='CSV file with classification results from DemuxEM',default="-")
 parser.add_argument('--hashsolo_results',  help='CSV file with classification results from Hash Solo',default="-")
-parser.add_argument('--solo_results',  help='CSV file with prediction results from Solo',default="-")
 
 parser.add_argument('--output_assignment',  help='name for the output file',default="general_assignment.csv")
 
 args = parser.parse_args()
 
+htodemux = False
+multiseq = False
+demuxem = False
+hasheddrops = False
+hashsolo = False
 
 
 total_classification = pd.DataFrame()
 
-if(args.hashsolo_results != "-"): 
+if(args.hashsolo_results != "-"):
+    hashsolo = True
     hashsolo_results = pd.read_csv(args.hashsolo_results)
     #Processing Hash Solo results
     hashsolo_hash = hashsolo_results.copy()
@@ -35,7 +40,8 @@ if(args.hashsolo_results != "-"):
     total_classification= pd.concat([total_classification,hashsolo_hash],axis=1)
     
 
-if(args.demuxem_results != "-"):  
+if(args.demuxem_results != "-" ):
+    demuxem = True
     demuxem_results = pd.read_csv(args.demuxem_results)
     #Processing DemuxEM results
     demuxem_hashes = demuxem_results.copy()
@@ -46,7 +52,7 @@ if(args.demuxem_results != "-"):
     demuxem_hashes.columns = ["Barcode_demux","Assignment-demuxem"]
     demuxem_hashes[['Assignment-demuxem']] = demuxem_hashes[['Assignment-demuxem']].fillna('Negative')
     demuxem_hashes.loc[demuxem_hashes['Assignment-demuxem'].str.contains(','), 'Assignment-demuxem'] = 'Doublet'
-    if(args.hashsolo_results != "-"):
+    if(hashsolo == True):
         #only delete barcode section if hash solo is out of the picture
         del demuxem_hashes["Barcode_demux"]
         total_classification["Assignment-demuxem"]=demuxem_hashes
@@ -56,11 +62,12 @@ if(args.demuxem_results != "-"):
 
 
 if(args.htodemul_assignment != "-"):
+    htodemux = True
     htodemul_hashes = pd.read_csv(args.htodemul_assignment) 
     #Processing HTODemux results
     htodemul_hashes.columns = ["Barcode_htoDemux","Assignment-htoDemux"]
     htodemul_hashes.loc[htodemul_hashes['Assignment-htoDemux'].str.contains('_'), 'Assignment-htoDemux'] = 'Doublet'
-    if(args.hashsolo_results == "-" and args.demuxem_results == "-"):
+    if(hashsolo == False and demuxem == False):
         total_classification = pd.concat([total_classification,htodemul_hashes],axis=1)
     else:
         del htodemul_hashes["Barcode_htoDemux"]
@@ -69,17 +76,19 @@ if(args.htodemul_assignment != "-"):
 
 
 if(args.multiseq_results != "-"):
+    multiseq = True
     multiseq_results = pd.read_csv(args.multiseq_results)
     #Processing MULTI-seq results
     multiseq_hashes = multiseq_results.copy()
     multiseq_hashes.columns = ["Barcode_multi","Assignment-multiseq"]
-    if(args.hashsolo_results == "-" and args.demuxem_results == "-" and args.multiseq_results  == "-"):
+    if(hashsolo == False  and demuxem == False and htodemux  == False):
         total_classification = pd.concat([total_classification,multiseq_hashes],axis=1)
     else:
         del multiseq_hashes["Barcode_multi"]
         total_classification["Assignment-multiseq"] = multiseq_hashes
 
-if(args.hashed_drop_results != "-"):   
+if(args.hashed_drop_results != "-"):
+    hasheddrops = True 
     hasheddrops_results = pd.read_csv(args.hashed_drop_results)
     #Processing Hashed Drop Results
     #Tranform singlet - doublet column into 1s and 0s
@@ -99,29 +108,14 @@ if(args.hashed_drop_results != "-"):
     del hasheddrops_hashes['Confident']
     del hasheddrops_hashes['HashedDrops']
     hasheddrops_hashes.columns = ["Barcode_hashed","Assignment-hashed"]
-    if(args.hashsolo_results == "-" and args.demuxem_results == "-" and args.multiseq_results  == "-" and args.multiseq_results== "-"):
+    if(hashsolo == False  and demuxem == False and htodemux  == False and multiseq == False):
         total_classification = pd.concat([total_classification,hasheddrops_hashes],axis=1)
     else:
         del hasheddrops_hashes["Barcode_hashed"]
         total_classification["Assignment-hashed"] = hasheddrops_hashes
 
 
-if(args.solo_results != "-"): 
-    solo_results = pd.read_csv(args.solo_results)
-    if(args.hashsolo_results == "-" and args.demuxem_results == "-" and args.multiseq_results  == "-" and args.multiseq_results== "-" and args.hasheddrops_hashes == "-"):
-        if solo_results.shape[1] == 2:
-            solo_results.columns = ["Barcode", "Prediction"]
-            total_classification = pd.concat([total_classification,solo_results],axis=1)
-        else:
-            solo_results.columns = ["Barcode","Doublet", "Singlet"]
-            total_classification = pd.concat([total_classification,solo_results],axis=1)
-    else:
-        if solo_results.shape[1] == 2:
-            del solo_results["Barcode"]
-            total_classification["Assignment-hashed"] = hasheddrops_hashes
-        else:
-            total_classification["Doublets"] = hasheddrops_hashes["Doublet"]
-            total_classification["Singlets"] = hasheddrops_hashes["Singlet"]
+
         
    
 

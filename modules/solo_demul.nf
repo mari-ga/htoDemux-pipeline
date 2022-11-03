@@ -13,11 +13,9 @@ workflow SOLO_DEMUL{
 
 
     main:
-        if(params.solo_mode == "TRUE")
-        {
            SOLO(rna_data,soft,max_epochs,lr,output_solo)
            solo_ch = SOLO.out.solo_out
-        }
+        
     emit:
         SOLO_OUT = solo_ch
 }

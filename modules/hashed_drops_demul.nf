@@ -3,7 +3,9 @@ process HASHED_DROPS_DEMUL{
     
     input:
         
-        val hto_matrix
+        path empty_drops_result
+        val rawData
+        val hashtag_data
         val nameOutputFileDrops
         val nameOutputFileHashed
         val ambient
@@ -14,7 +16,6 @@ process HASHED_DROPS_DEMUL{
         val doubletMin
         val confidenMin
         val confidentNmads
-        val combinations
     
 
     output:
@@ -24,7 +25,7 @@ process HASHED_DROPS_DEMUL{
 
     script:
         """ 
-            Rscript $baseDir/R/dropletUtils.R  --fileHto $hto_matrix --nameOutputFileDrops $nameOutputFileDrops --nameOutputFileHashed $nameOutputFileHashed --ambient $ambient --minProp $minProp --pseudoCount $pseudoCount --constAmbient $constAmbient --doubletNmads $doubletNmads --doubletMin $doubletMin --confidenMin $confidenMin --confidentNmads $confidentNmads --combinations $combinations 
+            Rscript $baseDir/R/dropletUtils.R  --rdsObject $empty_drops_result --rawData $rawData --fileHto $hashtag_data --nameOutputFileDrops $nameOutputFileDrops --nameOutputFileHashed $nameOutputFileHashed --ambient $ambient --minProp $minProp --pseudoCount $pseudoCount --constAmbient $constAmbient --doubletNmads $doubletNmads --doubletMin $doubletMin --confidenMin $confidenMin --confidentNmads $confidentNmads 
         """
 
 }

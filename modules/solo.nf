@@ -14,7 +14,7 @@ process SOLO{
     script:
 
         """
-          python $baseDir/Python/solo_demul.py --rna_file $rna_data --soft $soft --max_epochs $max_epochs --lr $lr --output $output_sol
+          python $baseDir/Python/solo_demul.py --rna_file $rna_file --soft $soft --max_epochs $max_epochs --lr $lr --output $output_solo
         """
 
 }

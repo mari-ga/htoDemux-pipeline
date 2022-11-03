@@ -4,7 +4,7 @@ include { EMPTY_DROPS } from './empty_drops'
 
 workflow EMPTY_DROPS_FLOW{
     take:
-       rna_raw 
+       hto_raw 
        niters
        empty
        lower
@@ -12,14 +12,17 @@ workflow EMPTY_DROPS_FLOW{
        alpha_empty
        ignore
        nameOutputEmpty
+       nameObjectEmpty
 
 
     main:
-        if(params.empty_drops_mode == "TRUE")
-        {
-           EMPTY_DROPS(rna_raw,niters,empty,lower,testAmbient,alpha_empty,ignore,nameOutputEmpty)
-           empty_ch = EMPTY_DROPS.out
-        }
+       
+           EMPTY_DROPS(hto_raw,niters,empty,lower,testAmbient,alpha_empty,ignore,nameOutputEmpty,nameObjectEmpty)
+           
+           empty_ch = EMPTY_DROPS.out.empty_drops_object
+
+           
+        
     emit:
         empty_out = empty_ch
 }

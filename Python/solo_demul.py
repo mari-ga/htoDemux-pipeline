@@ -1,3 +1,4 @@
+from ast import arg
 import scvi
 import scanpy as sc
 import matplotlib.pyplot as plt
@@ -14,7 +15,8 @@ parser.add_argument('--rna_file',  help='Input path to raw RNA expression matrix
 parser.add_argument('--soft',  help='Return probabilities instead of class label', default=False)
 parser.add_argument('--max_epochs',  help='Max Epochs for training',type=int, default=100)
 parser.add_argument('--lr',  help='Learning rate for training',type=float, default=0.001)
-
+parser.add_argument('--folder_name',  help='Name for a folder where Solo model will be stored',default="solo_model")
+parser.add_argument('--store_model',  help='Store_solo_model', default=True)
 parser.add_argument('--output',  help='Output name',default="solo_prediction.csv")
 args = parser.parse_args()
 
@@ -27,4 +29,6 @@ if __name__ == '__main__':
     solo = scvi.external.SOLO.from_scvi_model(vae)
     solo.train(max_epochs=args.max_epochs, lr=args.lr)
     prediction = solo.predict(soft=args.soft)
+    if(args.store_model == True):
+     solo.save(args.folder_name)
     prediction.to_csv(args.output)

@@ -14,6 +14,7 @@ p <- arg_parser("Parameters for Multi-seq")
 p <- add_argument(p, "--fileUmi",help="Path to file UMI count matrix")
 p <- add_argument(p, "--fileHto",help="Path to file HTO matrix")
 p <- add_argument(p, "--ndelim",help="For the initial identity calss for each cell, delimiter for the cell's column name",default="_")
+p <- add_argument(p, "--rdsObject",help="True if inputs are rds objects",default=FALSE)
 
 #Parameters - section 2
 p <- add_argument(p, "--selectMethod",help="Selection method", default="mean.var.plot")
@@ -42,10 +43,18 @@ argv <- parse_args(p)
 
 #---------------- Section 1 - Input files -----------------
 
-#Read file from X10 files
 
+
+if(isTRUE(argv$rdsObject)){
+#Read file from rds object
+umi <- readRDS(argv$fileUmi)
+counts <- readRDS(argv$fileHto)
+}else{
+#Read file from X10 files
 umi <- Read10X(data.dir = argv$fileUmi)
 counts <- Read10X(data.dir = argv$fileHto)
+}
+
 
 # Subset RNA and HTO counts by joint cell barcodes
 #Identify which UMI corresponds to which hashtag.

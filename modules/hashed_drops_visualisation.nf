@@ -12,7 +12,7 @@ process HASHED_VISUALISATION{
 
     script:
     """
-    Rscript $baseDir/R/hashed-visualisation.R --hashedObjectPath $result_object   --histogram $histogram  --plotLog $plotLog
+    Rscript $baseDir/R/hashed-visualisation.R --hashedObjectPath $result_object  --histogram $histogram  --plotLog $plotLog
     """
 
 }

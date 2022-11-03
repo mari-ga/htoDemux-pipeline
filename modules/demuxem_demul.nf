@@ -15,11 +15,10 @@ workflow DEMUXEM_DEMUL{
 
 
     main:
-        if(params.demuxem_mode == "TRUE")
-        {
+        
            DEMUXEM(rna_data,hto_matrix,alpha,alpha_noise,tol,n_threads, min_signal,output_demux)
            demuxem_ch = DEMUXEM.out.demuxem_out
-        }
+        
 
         
     emit:

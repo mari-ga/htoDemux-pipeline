@@ -25,7 +25,7 @@ process HTO_VISUALISATION{
     val tsneApprox
     val tsneDimMax
     val tsePerplexity
-    //Heatmat
+    //Heatmap
     val heatmap
     val heatmapNcells
 

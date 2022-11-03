@@ -34,43 +34,36 @@ p <- add_argument(p, "--tsePerplexity",help="value for perplexity", type="numeri
 #Output graphs - Heatmap
 p <- add_argument(p, "--heatmap",help="Generate a Heatmap", default = FALSE)
 p <- add_argument(p, "--heatmapNcells",help="value for number of cells", type="numeric",  default = 5000)
+p <- add_argument(p, "--classification_var",help="value for number of cells",  default = "HTO")
 
-#Output graphs - Cluster and PCA
-p <- add_argument(p, "--cluster",help="Cluster and visualize cells - perform PCA", default = FALSE)
-p <- add_argument(p, "--clusterIdents",help="Could choose Singlet Doublet", default = "Singlet")
-p <- add_argument(p, "--clusterSelMethod",help="Selection method for cluster, same options available as selection method for main experiment", default = "mean.var.plot")
-p <- add_argument(p, "--reductionMethod",help="Methos used to reduce the data", default = "pca")
-p <- add_argument(p, "--reductionDims",help="Dimensions of reduction to use as input", type="numeric",  default = 2)
-p <- add_argument(p, "--reductionResol",help="Value of the resolution parameter, use a value above (below) 1.0 if you want to obtain a larger (smaller) number of communities", type="numeric",  default = 0.1)
-p <- add_argument(p, "--dimPlot",help="Generate Dimensional reduction plot", default = FALSE)
 
 argv <- parse_args(p)
 
 
-print(argv$pbcmHashtagPath)
-#"/Users/mylenemarianagonzalesandre/Development/Bachelor-Thesis/nextflow-files/htoDemux-pipeline/results/results.rds"
+
+
 pbmc.hashtag <-readRDS(argv$pbcmHashtagPath)
 
 
 #graphsPath <- argv$graphs
 # Ridge Plot
 # Group cells based on the max HTO signal
-if(argv$ridgePlot){
+if(isTRUE(argv$ridgePlot)){
   Idents(pbmc.hashtag) <- "HTO_maxID"
-  plot<-RidgePlot(pbmc.hashtag, assay = argv$assayName, features = rownames(pbmc.hashtag[[argv$assayName]])[1:2], ncol = argv$ridgeNCol)
+  plot<-RidgePlot(pbmc.hashtag,  assay = argv$assayName, features = rownames(pbmc.hashtag[[argv$assayName]])[1:2], ncol = argv$ridgeNCol)
   png(paste("ridge.png",sep=""))
   print(plot)
   #dev.off()
 }
 
-if(argv$featureScatter){
+if(isTRUE(argv$featureScatter)){
   plot2<- FeatureScatter(pbmc.hashtag, feature1 = argv$scatterFeat1 , feature2 = argv$scatterFeat2)
   png(paste("FeatureScatter.png",sep=""))
   print(plot2)
   #dev.off()
 }
 
-if(argv$vlnplot){
+if(isTRUE(argv$vlnplot)){
   Idents(pbmc.hashtag) <- "HTO_classification.global"
   plot3<-VlnPlot(pbmc.hashtag, features = "nCount_RNA", pt.size = 0.1, log = TRUE)
   png(paste("violinPlot.png",sep=""))
@@ -80,7 +73,7 @@ if(argv$vlnplot){
 
 
 
-if(argv$tsne){
+if(isTRUE(argv$tsne)){
   # remove negative cells from the object
   pbmc.hashtag.subset <- subset(pbmc.hashtag, idents = argv$tseIdents, invert = argv$tsneInvert)
   # Calculate a tSNE embedding of the HTO data
@@ -95,35 +88,15 @@ if(argv$tsne){
   dev.off()
 }
 
-if(argv$heatmap){
+if(isTRUE(argv$heatmap)){
   # To increase the efficiency of plotting, you can subsample cells using the num.cells argument
   plot5 <-HTOHeatmap(pbmc.hashtag, assay = "HTO", ncells = argv$heatmapNcells)
   png(paste("heatmap.png",sep=""))
   print(plot5)
   dev.off()
 }
-str(pbmc.hashtag)
-pbmc.hashtag$active.ident
 
-if(argv$cluster){
-  pbmc.singlet <- subset(pbmc.hashtag, idents = "Negative")
-  pbmc.singlet <- FindVariableFeatures(pbmc.singlet, selection.method = "mean.var.plot")
-  pbmc.singlet <- ScaleData(pbmc.singlet, features = VariableFeatures(pbmc.singlet))
-  pbmc.singlet <- RunPCA(pbmc.singlet, features = VariableFeatures(pbmc.singlet))
-  # 
-  pbmc.singlet <- FindNeighbors(pbmc.singlet, reduction = "pca", dims = 1:10)
-  pbmc.singlet <- FindClusters(pbmc.singlet, resolution = 0.6, verbose = FALSE)
-  pbmc.singlet <- RunTSNE(pbmc.singlet, reduction = "pca", dims = 1:10)
-  # # 
-  # if(argv$dimPlot){
-  #   plot6 <- DimPlot(pbmc.singlet, group.by = "HTO_classification")
-  #   png(paste(graphsPath,"dimPlot.png",sep=""))
-  #   print(plot6)
-  #   dev.off()
-  # }
-  
-  
-}
+
 
 
 
