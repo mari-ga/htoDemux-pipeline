@@ -1,0 +1,10 @@
+title: Hashing Demultiplexing
+description: A small docs website for the hashing demultiplexing pipeline
+theme: just-the-docs
+
+url: https://mari-ga.github.io/hashing-demul-website
+
+aux_links:
+  Template Repository: https://github.com/just-the-docs/just-the-docs-template
+plugins:
+  - jekyll-default-layout

@@ -30,7 +30,7 @@ process HTO_VISUALISATION{
     val heatmapNcells
 
     output:
-    //multiples files * que terminan en .jpg (o algo por el estilo)
+    //multiples files * with png format
     file '*.png'
 
     script:
